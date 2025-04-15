@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\API\AuthController;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -129,11 +130,13 @@ class UserController extends Controller
         $user->zipcode = $request->get('zipcode');
         $user->address = $request->get('address');
         $user->update();
+        $token = Auth::refresh();
 
         return response()->json([
             'code' => '201',
             'status' => 'true',
-            'message' => 'user updated successfully'
+            'message' => 'user updated successfully',
+            'data'=> $token
         ],  201);
     }
 
@@ -162,10 +165,10 @@ class UserController extends Controller
     public function update_password(Request $request)
     {
 
-        $passwordRegex = '/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|min:6';
+        // $passwordRegex = '/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|min:6';
         // inject passwordRegex into validators for final build
 
-
+        // dd($request);
 
         $validator = Validator::make($request->all(), [
             'currentPassword' => 'required|string',

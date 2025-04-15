@@ -54,7 +54,7 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function searchCustomer(Request $request)
+    public function search_customer(Request $request)
     {
 
         $search = $request->email;

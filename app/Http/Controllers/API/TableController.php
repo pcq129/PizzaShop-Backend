@@ -29,7 +29,7 @@ class TableController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function indexBySection($id)
+    public function index_by_section($id)
     {
         $section = Section::with('tables')->find($id);
         // dd($section);

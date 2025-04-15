@@ -28,7 +28,12 @@ use App\Models\Section;
 |
 */
 
-Route::post('/login', [AuthController::class, 'login'], true)->name('login');
+// Route::middleware(['guest'])->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/forgot-password', [AuthController::class, 'forgot_password']);
+    Route::post('/password/reset', [AuthController::class, 'reset_password'])->name('password.reset');
+// });
+
 
 // add in [] in middleware group to implement
 Route::middleware(['auth:api'])->group(function () {
@@ -43,22 +48,22 @@ Route::middleware(['auth:api'])->group(function () {
     Route::resource('/category', ItemCategoryController::class);
     Route::resource('/modifier-group', ModifierGroupController::class);
     Route::resource('/modifier', ModifierController::class);
-    Route::resource('/section',SectionController::class);
-    Route::resource('/table',TableController::class);
-    Route::resource('/tax-fees',TaxFeeController::class);
-    Route::resource('/order',OrderController::class);
-    Route::resource('/customers',CustomerController::class);
-    Route::get('/sectionstable/{id}',[TableController::class, 'indexBySection']);
-    Route::get('/waiting-tokens',[SectionController::class, 'waiting_token']);
-    Route::put('/tax-fees-toggle/{id}',[TaxFeeController::class, 'toggle']);
-    Route::post('/upload-image',[ItemController::class, 'image']);
-    Route::delete('/upload-image/{image}',[ItemController::class, 'removeImage']);
+    Route::resource('/section', SectionController::class);
+    Route::resource('/table', TableController::class);
+    Route::resource('/tax-fees', TaxFeeController::class);
+    Route::resource('/order', OrderController::class);
+    Route::resource('/customers', CustomerController::class);
+    Route::get('/sectionstable/{id}', [TableController::class, 'index_by_section']);
+    Route::get('/waiting-tokens', [SectionController::class, 'waiting_token']);
+    Route::put('/tax-fees-toggle/{id}', [TaxFeeController::class, 'toggle']);
+    Route::post('/upload-image', [ItemController::class, 'image']);
+    Route::delete('/upload-image/{image}', [ItemController::class, 'removeImage']);
     Route::post('/customer/assign-table', [CustomerController::class, 'assign_table']);
     Route::post('/customer/waiting-token', [CustomerController::class, 'create_waiting_token']);
     Route::post('/customer/update-waiting-token', [CustomerController::class, 'update_waiting_token']);
     Route::post('order/{id}', [OrderController::class, 'complete_order']);
     Route::put('order', [OrderController::class, 'cancel_order']);
-    Route::post('customer/search', [CustomerController::class, 'searchCustomer']);
+    Route::post('customer/search', [CustomerController::class, 'search_customer']);
     Route::post('update-password', [UserController::class, 'update_password']);
     Route::get('/userdata', [AuthController::class, 'me']);
 });
