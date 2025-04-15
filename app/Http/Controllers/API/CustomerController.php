@@ -111,7 +111,8 @@ class CustomerController extends Controller
             'table_ids'=>['array', 'required'],
             'email'=> ['email','required'],
             'mobile'=> ['required'],
-            'name'=> ['required','string','max:140']
+            'name'=> ['required','string','max:140'],
+            'section_id' => ['required','numeric']
         ]);
 
         if ($validator->fails()) {
@@ -135,6 +136,9 @@ class CustomerController extends Controller
         if ($customer) {
             $customer_id = $customer->id;
             $customer->name = $request->name;
+            if(!$customer->section_id){
+                $customer->section_id = $request->section_id;
+            }
             $customer->status = "dining";
             $customer->save();
         }
@@ -144,6 +148,7 @@ class CustomerController extends Controller
             $customer->email = $request->email;
             $customer->name = $request->name;
             $customer->mobile = $request->mobile;
+            $customer->section_id = $request->section_id;
             $customer->status = "dining";
             $customer->save();
             $customer_id = $customer->id;
@@ -228,6 +233,22 @@ class CustomerController extends Controller
     {
         $id = $request->id;
         $customer = Customer::find($id);
+        // dd($customer);
+
+        if($request->delete){
+            // dd('idelete');
+            $customer->status = null;
+            $customer->section_id = 0;
+            $customer->save();
+            // dd($customer);
+            return response()->json([
+                "code" => "200",
+                "status" => "true",
+                "message" => "Waiting token deleted",
+            ], 200);
+        }
+
+
         if ($customer && !$request->delete) {
             $customer_id = $customer->id;
             $customer->email = $request->email;
@@ -236,9 +257,8 @@ class CustomerController extends Controller
             $customer->status = "waiting";
             $customer->head_count = $request->headCount;
             $customer->section_id = $request->sectionId;
-            if($request->delete){
-                $customer->status = null;
-            }
+
+
             $customer->save();
 
 

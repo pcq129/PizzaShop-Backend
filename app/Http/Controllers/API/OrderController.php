@@ -8,6 +8,7 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\Paginator;
 
 
 class OrderController extends Controller
@@ -18,6 +19,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::with('customer')->get();
+        // ->paginate(10);
         if ($orders) {
             return response()->json([
                 "code" => "200",
