@@ -18,8 +18,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('customer')->get();
-        // ->paginate(10);
+        $orders = Order::with('customer')->paginate(10);
         if ($orders) {
             return response()->json([
                 "code" => "200",

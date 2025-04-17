@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\API\AuthController;
+use Illuminate\Validation\Rule;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class UserController extends Controller
         return response()->json([
             'code' => '200',
             'status' => 'true',
-            'message' => $users,
+            'data' => $users,
         ], 200);
     }
 
@@ -34,15 +35,37 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
+        // {
+        //     "first_name": "harmit",
+        //     "last_name": "KAFK",
+        //     "username": "FAD",
+        //     "email": "DF@DAF.COM",
+        //     "phone": 787488,
+        //     "country": "COUTNRY",
+        //     "state": "state",
+        //     "city": "city",
+        //     "address": "ADD",
+        //     "zipcode": 4322,
+        //     "role": "user",
+        //     "password": "TEST",
+        //     "confirmPassword": "TEST"
+        // }
+
         $validator = Validator::make($request->all(), [
-            'user_name' => 'required|string|max:50|unique:App\Models\User,user_name',
-            'email' => 'required|string|email|max:50|unique:App\Models\User,email',
+            'username' => ['required','string','max:50',Rule::unique('users', 'user_name')->withoutTrashed()],
+            'email' => ['required','string','email','max:50',Rule::unique('users', 'email')->withoutTrashed()],
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'phone' => 'required|max_digits:12|min_digits:10|numeric',
             'address' => 'required|string|max:180',
             'password' => 'required|string|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|min:6',
             'role' => 'string|max:13',
+            'zipcode'=> 'required|numeric',
+            'state'=> 'required|max:50',
+            'country'=> 'required|max:50',
+            'city'=> 'required|max:50',
+
         ]);
 
         if ($validator->fails()) {
@@ -52,18 +75,87 @@ class UserController extends Controller
         $user = new User;
         $user->first_name = $request->get('first_name');
         $user->last_name = $request->get('last_name');
-        $user->user_name = $request->get('user_name');
+        $user->user_name = $request->get('username');
         $user->phone = $request->get('phone');
         $user->email = $request->get('email');
         $user->address = $request->get('address');
         $user->password = bcrypt($request->get('password'));
         $user->role = $request->get('role');
+        $user->zipcode = $request->get('zipcode');
+        // if($request->country && $request->state && $request->city){
+            $user->state =$request->state;
+            $user->country = $request->country;
+            $user->city = $request->city;
+        // }
         $user->save();
 
         return response()->json([
             'code' => '201',
             'status' => 'true',
             'message' => 'user added successfully'
+        ],  201);
+    }
+
+    public function update(Request $request)
+    {
+
+        // {
+        //     "first_name": "harmit",
+        //     "last_name": "KAFK",
+        //     "username": "FAD",
+        //     "email": "DF@DAF.COM",
+        //     "phone": 787488,
+        //     "country": "COUTNRY",
+        //     "state": "state",
+        //     "city": "city",
+        //     "address": "ADD",
+        //     "zipcode": 4322,
+        //     "role": "user",
+        //     "password": "TEST",
+        //     "confirmPassword": "TEST"
+        // }
+
+
+        $validator = Validator::make($request->all(), [
+            'username' => ['required','string','max:50',Rule::unique('users', 'user_name')->ignore($request->id)->withoutTrashed()],
+            'email' => ['required','string','email','max:50',Rule::unique('users', 'email')->ignore($request->id)->withoutTrashed()],
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'phone' => 'required|max_digits:12|min_digits:10|numeric',
+            'address' => 'required|string|max:180',
+            'role' => 'string|max:13',
+            'zipcode'=> 'required|numeric',
+            'state'=> 'required|max:50',
+            'country'=> 'required|max:50',
+            'city'=> 'required|max:50',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+        }
+
+        $user = User::find($request->id);
+        $user->first_name = $request->get('first_name');
+        $user->last_name = $request->get('last_name');
+        $user->user_name = $request->get('username');
+        $user->phone = $request->get('phone');
+        $user->email = $request->get('email');
+        $user->address = $request->get('address');
+        $user->password = bcrypt($request->get('password'));
+        $user->role = $request->get('role');
+        $user->zipcode = $request->get('zipcode');
+        // if($request->country && $request->state && $request->city){
+            $user->state =$request->state;
+            $user->country = $request->country;
+            $user->city = $request->city;
+        // }
+        $user->save();
+
+        return response()->json([
+            'code' => '201',
+            'status' => 'true',
+            'message' => 'user updated successfully'
         ],  201);
     }
 
@@ -100,14 +192,14 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update_user(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
-            'user_name' => 'required|string|max:50|unique:App\Models\User,user_name,' . $request->id . ',id',
-            'first_name' => 'required|string|max:50',
-            'last_name' => 'required|string|max:50',
+            // 'id' => 'required',
+            'username' => ['required','string','max:50',Rule::unique('users', 'user_name')->ignore($request->username, 'user_name')->withoutTrashed()],
+            'firstName' => 'required|string|max:50',
+            'lastName' => 'required|string|max:50',
             'address' => 'required|string|max:180',
             'country'=> 'required|string|max:50',
             'state' => 'required|string|max:50',
@@ -121,9 +213,9 @@ class UserController extends Controller
         }
 
         $user = Auth::getUser();
-        $user->first_name = $request->get('first_name');
-        $user->last_name = $request->get('last_name');
-        $user->user_name = $request->get('user_name');
+        $user->first_name = $request->get('firstName');
+        $user->last_name = $request->get('lastName');
+        $user->user_name = $request->get('username');
         $user->country = $request->get('country');
         $user->state = $request->get('state');
         $user->city = $request->get('city');
@@ -143,9 +235,9 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        $user = User::find($request->id);
+        $user = User::find($id);
         if ($user) {
             $user->delete();
             return response()->json([
@@ -182,9 +274,6 @@ class UserController extends Controller
 
         // $user = User::find($request->id);
         $user = Auth::getUser();
-
-        // $2y$10$Oolde.WHc4vCvWRLxkz8mOdadPXj9AqlLTOxc.aM7ZmWFEUyka1qm actualpass
-        // $2y$10$acqFPiQW7ZgJUtPDzKBO6uTeDBCNoIlBGL0yVrQhh2ErBQ.mIj7c.
 
 
         if (Hash::check($request->currentPassword, $user->password)) {
