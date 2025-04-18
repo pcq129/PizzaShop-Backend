@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', 10);
             $table->foreignId('section_id',false,true)->nullable(true)->references('id')->on('sections');
             $table->integer('capacity')->nullable(false)->default(0);
-            $table->enum('status',['Available', 'Occupied']);
+            $table->enum('status',['Available', 'Assigned','Running']);
             $table->softDeletes();
             $table->timestamps();
         });

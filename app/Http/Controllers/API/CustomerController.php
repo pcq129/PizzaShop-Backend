@@ -7,6 +7,7 @@ use App\Models\Table;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\waitingToken;
 use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
@@ -18,20 +19,22 @@ class CustomerController extends Controller
     {
         $customers = Customer::with('orders')->get();
         return response()->json([
-            "code"=>"200",
-            "status"=>"true",
-            "data"=>$customers,
-            "message"=>"Customers list fetched successfully"
+            "code" => "200",
+            "status" => "true",
+            "data" => $customers,
+            "message" => "Customers list fetched successfully"
         ]);
     }
 
-    public function waiting_token(){
-        $tokens = Customer::with('section')->where('status','waiting')->get();
+    public function waiting_token()
+    {
+        $tokens = Customer::with('section')->where('status', 1)->get();
+        dd($tokens);
         return response()->json([
-            "code"=>"200",
-            "status"=>"true",
-            "data"=>$tokens,
-            "message"=>"Waiting list fetched successfully"
+            "code" => "200",
+            "status" => "true",
+            "data" => $tokens,
+            "message" => "Waiting list fetched successfully"
         ]);
     }
 
@@ -60,21 +63,21 @@ class CustomerController extends Controller
         $search = $request->email;
         $section_id = $request->sectionId;
         // dd($request);
-        $customer = Customer::where('email', 'like', "%$search%")->where('status','=', 'waiting')->where('section_id','=',$section_id)->get();
+        $customer = Customer::where('email', 'like', "%$search%")->where('status', '=', 1)->where('section_id', '=', $section_id)->get();
         // dd($customer);
-        if($customer){
+        if ($customer) {
             return response()->json([
-                "status"=>"true",
-                "code"=>"200",
-                "data"=> $customer,
-                "message"=>"found existing customer",
+                "status" => "true",
+                "code" => "200",
+                "data" => $customer,
+                "message" => "found existing customer",
 
             ]);
-        }else{
+        } else {
             return response()->json([
-                "status"=>"false",
-                "code"=>"404",
-                "message"=>"customer not found",
+                "status" => "false",
+                "code" => "404",
+                "message" => "customer not found",
 
             ]);
         }
@@ -108,11 +111,11 @@ class CustomerController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'table_ids'=>['array', 'required'],
-            'email'=> ['email','required'],
-            'mobile'=> ['required'],
-            'name'=> ['required','string','max:140'],
-            'section_id' => ['required','numeric']
+            'table_ids' => ['array', 'required'],
+            'email' => ['email', 'required'],
+            'mobile' => ['required'],
+            'name' => ['required', 'string', 'max:140'],
+            'section_id' => ['required', 'numeric']
         ]);
 
         if ($validator->fails()) {
@@ -136,10 +139,12 @@ class CustomerController extends Controller
         if ($customer) {
             $customer_id = $customer->id;
             $customer->name = $request->name;
-            if(!$customer->section_id){
+
+            if (!$customer->section_id) {
                 $customer->section_id = $request->section_id;
             }
-            $customer->status = "dining";
+            $customer->status = 2;
+            $customer->waitingTokens()->delete();
             $customer->save();
         }
         $allAvailable = 1;
@@ -149,7 +154,8 @@ class CustomerController extends Controller
             $customer->name = $request->name;
             $customer->mobile = $request->mobile;
             $customer->section_id = $request->section_id;
-            $customer->status = "dining";
+            $customer->status = 2;
+            $customer->waitingTokens()->delete();
             $customer->save();
             $customer_id = $customer->id;
         }
@@ -194,12 +200,18 @@ class CustomerController extends Controller
             $customer_id = $customer->id;
             $customer->name = $request->name;
 
-            if($customer->status != "waiting"){
-                $customer->status = "waiting";
+            if ($customer->status != 1) {
+                $customer->status = 1;
                 $customer->section_id = $request->sectionId;
                 $customer->head_count = $request->headCount;
                 $customer->save();
-            }else{
+
+                $waitingToken = new waitingToken();
+                $waitingToken->head_count = $request->headCount;
+                $waitingToken->section_id = $request->sectionId;
+                $waitingToken->customer_id = $customer_id;
+                $waitingToken->save();
+            } else {
                 return response()->json([
                     "code" => "200",
                     "status" => "true",
@@ -213,11 +225,23 @@ class CustomerController extends Controller
             $customer->email = $request->email;
             $customer->name = $request->name;
             $customer->mobile = $request->mobile;
-            $customer->status = "waiting";
+            // null = no status, 1 = waiting, 2 = ordered
+
+
+            $customer->status = 1;
             $customer->head_count = $request->headCount;
             $customer->section_id = $request->sectionId;
             $customer->save();
             $customer_id = $customer->id;
+
+            $waitingToken = new waitingToken();
+            $waitingToken->head_count = $request->headCount;
+            $waitingToken->section_id = $request->sectionId;
+            $waitingToken->customer_id = $customer_id;
+            $waitingToken->save();
+
+
+
 
             return response()->json([
                 "code" => "200",
@@ -235,7 +259,7 @@ class CustomerController extends Controller
         $customer = Customer::find($id);
         // dd($customer);
 
-        if($request->delete){
+        if ($request->delete) {
             // dd('idelete');
             $customer->status = null;
             $customer->section_id = 0;
@@ -254,7 +278,7 @@ class CustomerController extends Controller
             $customer->email = $request->email;
             $customer->name = $request->name;
             $customer->mobile = $request->mobile;
-            $customer->status = "waiting";
+            $customer->status = 1;
             $customer->head_count = $request->headCount;
             $customer->section_id = $request->sectionId;
 
@@ -269,7 +293,5 @@ class CustomerController extends Controller
                 "data" => $customer_id
             ], 200);
         }
-
-
     }
 }

@@ -28,6 +28,16 @@ class Customer extends Model
     }
 
     /**
+     * Get all of the waitingTokens for the Customer
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function waitingTokens(): HasMany
+    {
+        return $this->hasMany(waitingToken::class, 'customer_id', 'id');
+    }
+
+    /**
      * Get the section that owns the Customer
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

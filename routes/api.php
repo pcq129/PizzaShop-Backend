@@ -61,10 +61,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/customer/assign-table', [CustomerController::class, 'assign_table']);
     Route::post('/customer/waiting-token', [CustomerController::class, 'create_waiting_token']);
     Route::post('/customer/update-waiting-token', [CustomerController::class, 'update_waiting_token']);
-    Route::post('order/{id}', [OrderController::class, 'complete_order']);
-    Route::put('order', [OrderController::class, 'cancel_order']);
-    Route::post('customer/search', [CustomerController::class, 'search_customer']);
-    Route::post('update-password', [UserController::class, 'update_password']);
-    Route::post('update-profile', [UserController::class, 'update_user']);
+    Route::post('/order/{id}', [OrderController::class, 'complete_order']);
+    Route::put('/order', [OrderController::class, 'cancel_order']);
+    Route::post('/customer/search', [CustomerController::class, 'search_customer']);
+    Route::post('/update-password', [UserController::class, 'update_password']);
+    Route::post('/update-profile', [UserController::class, 'update_user']);
     Route::get('/userdata', [AuthController::class, 'me']);
+    Route::get('/dashboard', [OrderController::class, 'dashboard_data']);
 });

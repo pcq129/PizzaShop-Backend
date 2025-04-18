@@ -27,7 +27,7 @@ class SectionController extends Controller
 
     public function waiting_token(){
         $tokens = Section::with(['customers'=>function ($query){
-            $query->where('customers.status', 'waiting');
+            $query->where('customers.status', 1);
         }])->get();
         return response()->json([
             "code"=>"200",

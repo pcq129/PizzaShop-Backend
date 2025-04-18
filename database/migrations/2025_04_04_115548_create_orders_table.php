@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
             $table->unsignedBigInteger('customer_id');
-            $table->string('order_status', 30)->nullable(true)->default(null);
+            $table->enum('order_status', ['Served', 'Ordered'])->nullable(true)->default(null);
             $table->json('order_data');
             $table->enum('payment_mode',['Cash', 'Online', 'Card']);
             $table->enum('payment_status', ['Completed', 'Pending', '-']);
