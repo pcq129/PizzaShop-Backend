@@ -164,6 +164,21 @@ class TableController extends Controller
         ], 200);
     }
 
-
-
+    public function search_table($search){
+        $tables = Table::where('name', 'like', "%$search%")->get();
+        if($tables->count()>=1){
+            return response()->json([
+                'code' => '200',
+                'status' => 'true',
+                'data'=> $tables,
+                'message' => 'Tables found'
+            ],  200);
+        }else{
+            return response()->json([
+                'code' => '404',
+                'status' => 'false',
+                'message' => 'Tables not found'
+            ],  404);
+        }
+    }
 }

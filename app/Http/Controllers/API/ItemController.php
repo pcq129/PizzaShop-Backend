@@ -255,4 +255,22 @@ class ItemController extends Controller
             ]);
         }
     }
+
+    public function search_item($search){
+        $item = Item::where('name', 'like', "%$search%")->get();
+        if($item->count()>=1){
+            return response()->json([
+                'code' => '200',
+                'status' => 'true',
+                'data'=> $item,
+                'message' => 'Items found'
+            ],  200);
+        }else{
+            return response()->json([
+                'code' => '404',
+                'status' => 'false',
+                'message' => 'Items not found'
+            ],  404);
+        }
+    }
 }

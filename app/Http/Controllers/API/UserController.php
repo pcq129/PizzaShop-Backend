@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\API\AuthController;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
 
@@ -302,6 +303,26 @@ class UserController extends Controller
                 'status' => 'false',
                 'message' => 'Invalid current password'
             ],  200);
+        }
+    }
+
+
+    public function search_user($search){
+        $table = 'App\Models\User';
+        $user = $table::where('user_name', 'like', "%$search%")->get();
+        if($user->count()>=1){
+            return response()->json([
+                'code' => '200',
+                'status' => 'true',
+                'data'=> $user,
+                'message' => 'Users found'
+            ],  200);
+        }else{
+            return response()->json([
+                'code' => '404',
+                'status' => 'false',
+                'message' => 'Users not found'
+            ],  404);
         }
     }
 }

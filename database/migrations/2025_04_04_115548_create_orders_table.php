@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
             $table->unsignedBigInteger('customer_id');
-            $table->enum('order_status', ['Served', 'Ordered'])->nullable(true)->default(null);
+            $table->enum('order_status', ['Completed', 'Ordered'])->nullable(true)->default(null);
             $table->json('order_data');
             $table->enum('payment_mode',['Cash', 'Online', 'Card']);
             $table->enum('payment_status', ['Completed', 'Pending', '-']);
             $table->integer('bill_amount')->nullable(true)->default(null);
-            $table->enum('rating', ['1','2','3','4','5'])->nullable(true)->default(null);
+            $table->json('rating')->nullable(true)->default(null);
             $table->string('comment', 180)->nullable(true)->default(null);
             $table->softDeletes();
             $table->timestamps();

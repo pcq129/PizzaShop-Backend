@@ -33,4 +33,13 @@ class ItemCategory extends Model
     protected $table = 'item_categories';
 
 
+    /**
+     * Get all of the kots for the ItemCategory
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function kots(): HasMany
+    {
+        return $this->hasMany(KOT::class, 'item_category', 'id');
+    }
 }

@@ -205,4 +205,22 @@ use Illuminate\Validation\Rule;
             'message' => 'Modifier not found'
         ],  200);
     }
+
+    public function search_modifier($search){
+        $modifier = Modifier::where('name', 'like', "%$search%")->get();
+        if($modifier->count()>=1){
+            return response()->json([
+                'code' => '200',
+                'status' => 'true',
+                'data'=> $modifier,
+                'message' => 'Modifiers found'
+            ],  200);
+        }else{
+            return response()->json([
+                'code' => '404',
+                'status' => 'false',
+                'message' => 'Modifiers not found'
+            ],  404);
+        }
+    }
 }

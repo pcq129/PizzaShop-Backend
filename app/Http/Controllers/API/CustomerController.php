@@ -294,4 +294,22 @@ class CustomerController extends Controller
             ], 200);
         }
     }
+
+    public function search_customer_by_name($search){
+        $customers = Customer::where('name', 'like', "%$search%")->get();
+        if($customers->count()>=1){
+            return response()->json([
+                'code' => '200',
+                'status' => 'true',
+                'data'=> $customers,
+                'message' => 'Customers found'
+            ],  200);
+        }else{
+            return response()->json([
+                'code' => '404',
+                'status' => 'false',
+                'message' => 'Customers not found'
+            ],  404);
+        }
+    }
 }

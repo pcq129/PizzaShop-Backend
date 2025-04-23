@@ -35,14 +35,14 @@ class TaxFeeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => [Rule::Unique('tax_fees', 'name')->ignore($request->id)->withoutTrashed(), 'required'],
             'type' => ['required', Rule::in(['percentage', 'flat_amount'])],
-            'amount'=> [Rule::excludeIf(request('type') === 'flat_amount'),'required','numeric','min:1','max:50'],
+            'amount' => [Rule::excludeIf(request('type') === 'flat_amount'), 'required', 'numeric', 'min:1', 'max:50'],
 
             // 'amount'=> ['exclude_if:type,flat_amount','required','min:1','max:50'],
             // 'amount'=> ['exclude_if:type,percentage','required','min:0'],
-            'enabled'=> ['required','boolean' ],
-            'default'=> ['required','boolean' ],
-        ],$message = [
-             'amount'=> 'Tax amount cannot exceed 50%'
+            'enabled' => ['required', 'boolean'],
+            'default' => ['required', 'boolean'],
+        ], $message = [
+            'amount' => 'Tax amount cannot exceed 50%'
         ]);
 
         if ($validator->fails()) {
@@ -68,7 +68,8 @@ class TaxFeeController extends Controller
     //     'state': state,
     //     'toggle': toggle
     //   }
-    public function toggle($id, Request $request){
+    public function toggle($id, Request $request)
+    {
         $field = $request->toggle;
         $tax = TaxFee::find($id);
         $tax->$field = $request->state;
@@ -76,7 +77,7 @@ class TaxFeeController extends Controller
         return response()->json([
             'code' => '200',
             'status' => 'true',
-            'message' => 'Successfully toggled '.$field.'.'
+            'message' => 'Successfully toggled ' . $field . '.'
         ], 200);
     }
 
@@ -84,7 +85,7 @@ class TaxFeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
 
 
@@ -93,10 +94,10 @@ class TaxFeeController extends Controller
 
             'name' => [Rule::Unique('tax_fees', 'name')->ignore($request->id)->withoutTrashed(), 'required'],
             'type' => ['required', Rule::in(['percentage', 'flat_amount'])],
-            'amount'=> [Rule::excludeIf(request('type') === 'flat_amount'),'required','numeric','min:1','max:50'],
-            'enabled'=> ['required','boolean'],
-        ],$message = [
-            'amount'=> 'Tax amount cannot exceed 50%'
+            'amount' => [Rule::excludeIf(request('type') === 'flat_amount'), 'required', 'numeric', 'min:1', 'max:50'],
+            'enabled' => ['required', 'boolean'],
+        ], $message = [
+            'amount' => 'Tax amount cannot exceed 50%'
         ]);
 
         if ($validator->fails()) {
@@ -124,7 +125,7 @@ class TaxFeeController extends Controller
     public function destroy($id)
     {
         $tax = TaxFee::findOrFail($id);
-        if($tax){
+        if ($tax) {
             $tax->delete();
             return response()->json([
                 'code' => '200',
@@ -137,5 +138,24 @@ class TaxFeeController extends Controller
             'status' => 'false',
             'message' => 'Tax not found',
         ], 200);
+    }
+
+    public function search_tax($search)
+    {
+        $tax = TaxFee::where('name', 'like', "%$search%")->get();
+        if ($tax->count() >= 1) {
+            return response()->json([
+                'code' => '200',
+                'status' => 'true',
+                'data' => $tax,
+                'message' => 'Taxes found'
+            ],  200);
+        } else {
+            return response()->json([
+                'code' => '404',
+                'status' => 'false',
+                'message' => 'Taxes not found'
+            ],  404);
+        }
     }
 }

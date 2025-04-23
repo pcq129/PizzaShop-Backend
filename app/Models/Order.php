@@ -28,4 +28,14 @@ class Order extends Model
       return $this->belongsToMany(Item::class, 'item_order_mapper', 'order_id', 'item_id');
   }
 
+  /**
+   * Get all of the kots for the Order
+   *
+   * @return \Illuminate\Database\Eloquent\Relations\HasMany
+   */
+  public function kots(): HasMany
+  {
+      return $this->hasMany(KOT::class, 'order_id', 'id');
+  }
+
 }

@@ -15,6 +15,8 @@ use App\Http\Controllers\API\TableController;
 use App\Http\Controllers\API\TaxFeeController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\KOTController;
+use App\Models\ItemCategory;
 use App\Models\Section;
 
 /*
@@ -67,5 +69,24 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/update-password', [UserController::class, 'update_password']);
     Route::post('/update-profile', [UserController::class, 'update_user']);
     Route::get('/userdata', [AuthController::class, 'me']);
-    Route::get('/dashboard', [OrderController::class, 'dashboard_data']);
+    Route::get('/dashboard/{filter}', [OrderController::class, 'dashboard_data']);
+    Route::post('/customer-feedback', [OrderController::class, 'customerFeedback']);
+    Route::resource('/kots', KOTController::class);
+
+
+
+    Route::get('/export-excel', [OrderController::class, 'exportToExcel']);
+
+
+
+    // routes for searching
+
+    Route::get('user/search/{search}', [UserController::class, 'search_user']);
+    Route::get('item/search/{search}', [ItemController::class, 'search_item']);
+    Route::get('table/search/{search}', [TableController::class, 'search_table']);
+    Route::get('tax-fees/search/{search}', [TaxFeeController::class, 'search_tax']);
+    Route::get('customer/search/{search}', [CustomerController::class, 'search_customer_by_name']);
+    Route::get('modifier/search/{search}', [ModifierController::class, 'search_modifier']);
+
+
 });
