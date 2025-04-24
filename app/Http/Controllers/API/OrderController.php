@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use App\Exports\OrdersExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Collection;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 class OrderController extends Controller
@@ -388,15 +389,34 @@ class OrderController extends Controller
         // }
     }
 
-    public function exportToExcel()
+    public function exportToExcel($filter)
     {
-        // Example: get data from a model or build your own collection
-        $order_data = Order::join('customers', 'orders.customer_id', '=', 'customers.id')
-        ->select('orders.id', 'orders.created_at', 'customers.name as customer_name', 'orders.payment_status', 'orders.payment_mode','orders.rating', 'orders.bill_amount')
-        ->get();
-        // Optional: Define headings (should match keys)
-        $headings = ['ID', 'Order Date', 'Name','Payment','Mode','Rating','Amount'];
 
+        $filters = ['id'=>$filter];
+        $order_data = "";
+        if($filter == 0){
+            $order_data = Order::join('customers', 'orders.customer_id', '=', 'customers.id')
+            ->select('orders.id', 'orders.created_at', 'customers.name as customer_name', 'orders.payment_status', 'orders.payment_mode', 'orders.rating', 'orders.bill_amount')
+            ->get();
+        }
+        else{
+            $order_data = Order::where('orders.id','like',"%$filter%")->join('customers', 'orders.customer_id', '=', 'customers.id')
+            ->select('orders.id', 'orders.created_at', 'customers.name as customer_name', 'orders.payment_status', 'orders.payment_mode', 'orders.rating', 'orders.bill_amount')
+            ->get();
+
+        }
+        $headings =
+            ['ID', 'Order Date', 'Name', 'Payment', 'Mode', 'Rating', 'Amount']
+        ;
         return Excel::download(new OrdersExport($order_data, $headings), 'orders.xlsx');
+
+
+        // return response()->json([
+        //     'code'=>200,
+        //     'status'=>'true',
+        //     'data'=>Excel::download(new OrdersExport($order_data, $headings), 'users.xlsx'),
+        //     'message'=>"Orders exported successfully"
+        // ]);
+
     }
 }

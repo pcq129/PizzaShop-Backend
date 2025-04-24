@@ -39,8 +39,9 @@ class OrdersExport implements
 
     protected $data;
     protected $headers;
+    // protected $filters;
 
-    public function __construct(Collection $data, array $headers = [])
+    public function __construct(Collection $data, array $headers = [] )
     {
         $this->data = $data;
         $this->headers = $headers;
@@ -68,48 +69,52 @@ class OrdersExport implements
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => ['argb' => 'FF0070c0'],
             ]],
-
-
-
         ];
     }
 
-    // public function title(): string
-    // {
-    //     return 'Orders Summary';
-    // }
+
 
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
+
                 $sheet = $event->sheet->getDelegate();
 
-                // Merge header cells
-                $sheet->setCellValue('B2', 'Status:')->getStyle('B2')->applyFromArray([
-                   'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['argb' => 'FF0070c0'],
-            ]
-                ]);
-                $sheet->setCellValue('B5', 'Date:')->getStyle('B5')->applyFromArray([
-                   'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['argb' => 'FF0070c0'],
-            ]
-                ]);
-                $sheet->setCellValue('D2', 'Search Text:')->getStyle('D2')->applyFromArray([
-                   'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['argb' => 'FF0070c0'],
-            ]
-                ]);
-                $sheet->setCellValue('D5', 'No. Of Records:')->getStyle('D5')->applyFromArray([
-                   'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['argb' => 'FF0070c0'],
-            ]
-                ]);
+
+                $sheet->mergeCells('D2:E5')->setCellValue('D2', 'Pizza Shop Orders')->getStyle('D2')->applyFromArray([
+                           'font' => ['bold' => true,
+                           'color' => ['argb' => 'FF0070c0'],
+                                        'size' => 20,],
+                            'alignment' => ['horizontal' => 'center', 'vertical'=>'center'],
+                        ]);
+                        $sheet->mergeCells('C2:C5');
+
+            //     // Merge header cells
+            //     $sheet->setCellValue('B2', 'Status:')->getStyle('B2')->applyFromArray([
+            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+            //     'fillType' => Fill::FILL_SOLID,
+            //     'startColor' => ['argb' => 'FF0070c0'],
+            // ]
+            //     ]);
+            //     $sheet->setCellValue('B5', 'Date:')->getStyle('B5')->applyFromArray([
+            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+            //     'fillType' => Fill::FILL_SOLID,
+            //     'startColor' => ['argb' => 'FF0070c0'],
+            // ]
+            //     ]);
+            //     $sheet->setCellValue('D2', 'Search Text:')->getStyle('D2')->applyFromArray([
+            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+            //     'fillType' => Fill::FILL_SOLID,
+            //     'startColor' => ['argb' => 'FF0070c0'],
+            // ]
+            //     ]);
+            //     $sheet->setCellValue('D5', 'No. Of Records:')->getStyle('D5')->applyFromArray([
+            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+            //     'fillType' => Fill::FILL_SOLID,
+            //     'startColor' => ['argb' => 'FF0070c0'],
+            // ]
+            //     ]);
 
                 // Style headers
                 $lastRow = count($this->data);
@@ -154,7 +159,7 @@ class OrdersExport implements
         $drawing->setDescription('Logo');
         $drawing->setPath(public_path('brandLogo.png')); // your logo path
         $drawing->setHeight(80);
-        $drawing->setCoordinates('G2');
+        $drawing->setCoordinates('C2');
 
         return [$drawing];
     }

@@ -75,7 +75,7 @@ Route::middleware(['auth:api'])->group(function () {
 
 
 
-    Route::get('/export-excel', [OrderController::class, 'exportToExcel']);
+    Route::get('/export-excel/{filter}', [OrderController::class, 'exportToExcel']);
 
 
 
