@@ -345,28 +345,110 @@ class OrderController extends Controller
 
 
 
+
+
+
         //graphs
 
-        $startDate = Carbon::now()->startOfMonth()->toDateString();
-        $endDate = Carbon::now()->endOfMonth()->toDateString();
+        // // $startDate = Carbon::now()->startOfMonth()->toDateString();
+        // $endDate = Carbon::now();
+        // // ->endOfMonth()->toDateString()
 
-        $dailyRevenue = DB::table('orders')
+        // $daily_revenue = DB::table('orders')
+        //     ->selectRaw('DATE(created_at) as date, SUM(bill_amount) as total')
+        //     ->whereBetween('created_at', [$startDate, $endDate])
+        //     ->groupBy('date')
+        //     ->orderBy('date')
+        //     ->pluck('total', 'date');
+
+        // $daysInMonth = Carbon::now()->daysInMonth;
+        // $revenue_labels = [];
+        // $revenue_data = [];
+
+
+        // for ($day = 1; $day <= $daysInMonth; $day++) {
+        //     $date = Carbon::now()->startOfMonth()->addDays($day - 1)->toDateString();
+        //     $revenue_labels[] = (string) $day;
+        //     $revenue_data[] = isset($daily_revenue[$date]) ? $daily_revenue[$date] : 0;
+        // }
+
+
+        // $startDate = Carbon::now()->startOfMonth()->toDateString();
+        // ->endOfMonth()->toDateString()
+
+
+        // $startDate = Carbon::now()->startOfMonth()->toDateString();
+        $endDate = Carbon::now();
+        // ->endOfMonth()->toDateString()
+
+        $daily_revenue = DB::table('orders')
             ->selectRaw('DATE(created_at) as date, SUM(bill_amount) as total')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('total', 'date');
+        // dd($daily_revenue);
 
-        $daysInMonth = Carbon::now()->daysInMonth;
-        $chartLabels = [];
-        $chartData = [];
+        $filterStartDate = Carbon::now()->subDays($timeSpan);
+        $revenue_labels = [];
+        $revenue_data = [];
 
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $date = Carbon::now()->startOfMonth()->addDays($day - 1)->toDateString();
-            $chartLabels[] = (string) $day;
-            $chartData[] = isset($dailyRevenue[$date]) ? $dailyRevenue[$date] : 0;
+
+        if ($filter != 3) {
+            $filterStartDate = Carbon::now()->subDays($timeSpan);
+            $filterSpan = $timeSpan;
+        } else {
+            $filterStartDate = Carbon::now()->startOfMonth()->subDays(1);
+            $filterSpan = $filterStartDate->diffInDays($endDate);
         }
 
+
+
+        // $endDateDay = $endDate->day;
+        // $filterStartDateDay = $filterStartDate->day;
+        // $filterStartDate->diffInDays($endDate)
+
+
+        for ($day = 0; $day <= $filterSpan; $day++) {
+
+            $date = $filterStartDate->addDays(1);
+            $dateString = $date->toDateString();
+            $revenue_labels[] = $date->day;
+            $revenue_data[] = isset($daily_revenue[$dateString]) ? $daily_revenue[$dateString] : 0;
+        }
+
+
+
+
+
+        $filterStartDate = Carbon::now()->subDays($timeSpan);
+        if ($filter != 3) {
+            $filterStartDate = Carbon::now()->subDays($timeSpan);
+            $filterSpan = $timeSpan;
+        } else {
+            $filterStartDate = Carbon::now()->startOfMonth()->subDays(1);
+            $filterSpan = $filterStartDate->diffInDays($endDate);
+        }
+
+        $customer_growth = DB::table('customers')
+            ->selectRaw('DATE(created_at) as date, count(*) as number')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('number', 'date');
+
+        $customer_growth_labels = [];
+        $custome_growth_data = [];
+
+        for ($day = 0; $day <= $filterSpan; $day++) {
+            $date = $filterStartDate->addDays(1);
+            $dateString = $date->toDateString();
+            $revenue_labels[] = $date->day;
+            $revenue_data[] = isset($daily_revenue[$dateString]) ? $daily_revenue[$dateString] : 0;
+
+            $customer_growth_labels[] = $date->day;
+            $custome_growth_data[] = isset($customer_growth[$dateString]) ? $customer_growth[$dateString] : 0;
+        }
 
 
         return response()->json([
@@ -378,9 +460,13 @@ class OrderController extends Controller
                 'waitinglist_count' => $waitinglist_count,
                 'average_waiting_minutes' => $average_waiting_minutes,
                 'new_customer_count' => $new_customer_count,
-                'chart1' => [
-                    'labels' => $chartLabels,
-                    'data' => $chartData
+                'revenue' => [
+                    'labels' => $revenue_labels,
+                    'data' => $revenue_data
+                ],
+                'customer_growth' => [
+                    'labels' => $customer_growth_labels,
+                    'data' => $custome_growth_data
                 ],
                 'top_selling' => $top_selling,
                 'least_selling' => $least_selling
