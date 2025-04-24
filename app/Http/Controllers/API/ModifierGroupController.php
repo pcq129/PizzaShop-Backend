@@ -37,7 +37,7 @@ class ModifierGroupController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
         $modifierGroup = new ModifierGroup();
@@ -63,7 +63,7 @@ class ModifierGroupController extends Controller
         //     'id'=>'required'
         // ]);
         // if($validator->fails()){
-        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         // }
 
         $modifierGroup = ModifierGroup::with('Modifiers')->find($id);
@@ -100,7 +100,7 @@ class ModifierGroupController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
 

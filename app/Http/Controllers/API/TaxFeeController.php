@@ -46,7 +46,7 @@ class TaxFeeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
         $tax = new TaxFee();
@@ -101,7 +101,7 @@ class TaxFeeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
         $tax = TaxFee::findOrFail($id);

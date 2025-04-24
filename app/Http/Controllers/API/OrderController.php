@@ -27,7 +27,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('customer')->get();
+        $orders = Order::with('customer')->orderBy('created_at', 'desc')->get();
         if ($orders) {
             return response()->json([
                 "code" => "200",
@@ -80,7 +80,7 @@ class OrderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
 
@@ -141,7 +141,7 @@ class OrderController extends Controller
         // $validator = Validator::make([$id], ['numeric', 'required']);
 
         // if ($validator->fails()) {
-        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         // }
 
 
@@ -170,32 +170,42 @@ class OrderController extends Controller
 
         $validator = Validator::make($request->all(), [
             'table_ids' => ['array', 'required'],
-            'customer_id' => ['required', 'numeric']
+            'customer_id' => ['required', 'numeric'],
+            'order_id' => ['required', 'numeric']
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
 
+        $kot = KOT::find('order_id', $request->order_id);
 
-        $table_ids = $request->table_ids;
-        // dd($table_ids);
-        Table::whereIn('id', $table_ids)->update(['status' => 'Available']);
+        if ($kot->status == 0) {
+            $table_ids = $request->table_ids;
+            // dd($table_ids);
+            Table::whereIn('id', $table_ids)->update(['status' => 'Available']);
 
-        $customer = Customer::find($request->customer_id);
-        $customer->status = null;
-        $customer->save();
+            $customer = Customer::find($request->customer_id);
+            $customer->status = null;
+            $customer->save();
 
-        // Table::whereIn('id', $request)->update(['status' => 'Available']);
-        // $customer = Customer::find($request->customer_id);
-        // $customer->delete();
+            // Table::whereIn('id', $request)->update(['status' => 'Available']);
+            // $customer = Customer::find($request->customer_id);
+            // $customer->delete();
 
-        return response()->json([
-            "code" => "200",
-            "status" => "true",
-            "message" => "Order cancelled"
-        ], 200);
+            return response()->json([
+                "code" => "200",
+                "status" => "true",
+                "message" => "Order cancelled"
+            ], 200);
+        } else {
+            return response()->json([
+                "code" => "200",
+                "status" => "false",
+                "message" => "Items are already prepared"
+            ], 200);
+        }
     }
 
     public function customerFeedback(Request $request)
@@ -205,7 +215,7 @@ class OrderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages()], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first()], 200);
         }
 
         $rating = json_decode($request->rating, true);
@@ -392,22 +402,34 @@ class OrderController extends Controller
     public function exportToExcel($filter)
     {
 
-        $filters = ['id'=>$filter];
+        $filters = ['id' => $filter];
         $order_data = "";
-        if($filter == 0){
-            $order_data = Order::join('customers', 'orders.customer_id', '=', 'customers.id')
-            ->select('orders.id', 'orders.created_at', 'customers.name as customer_name', 'orders.payment_status', 'orders.payment_mode', 'orders.rating', 'orders.bill_amount')
-            ->get();
-        }
-        else{
-            $order_data = Order::where('orders.id','like',"%$filter%")->join('customers', 'orders.customer_id', '=', 'customers.id')
-            ->select('orders.id', 'orders.created_at', 'customers.name as customer_name', 'orders.payment_status', 'orders.payment_mode', 'orders.rating', 'orders.bill_amount')
-            ->get();
+        if ($filter == 0) {
 
+            $order_data = Order::join('customers', 'orders.customer_id', '=', 'customers.id')
+                ->select(
+                    'orders.id',
+                    'orders.created_at',
+                    'customers.name as customer_name',
+                    'orders.payment_status',
+                    'orders.payment_mode',
+                    DB::raw("JSON_UNQUOTE(JSON_EXTRACT(orders.rating, '$.food')) as food_rating"),
+                    'orders.bill_amount'
+                )->get();
+        } else {
+            $order_data = Order::where('orders.id', 'like', "%$filter%")->join('customers', 'orders.customer_id', '=', 'customers.id')
+                ->select(
+                    'orders.id',
+                    'orders.created_at',
+                    'customers.name as customer_name',
+                    'orders.payment_status',
+                    'orders.payment_mode',
+                    DB::raw("JSON_UNQUOTE(JSON_EXTRACT(orders.rating, '$.food')) as food_rating"),
+                    'orders.bill_amount'
+                )->get();
         }
         $headings =
-            ['ID', 'Order Date', 'Name', 'Payment', 'Mode', 'Rating', 'Amount']
-        ;
+            ['ID', 'Order Date', 'Name', 'Payment', 'Mode', 'Rating', 'Amount'];
         return Excel::download(new OrdersExport($order_data, $headings), 'orders.xlsx');
 
 

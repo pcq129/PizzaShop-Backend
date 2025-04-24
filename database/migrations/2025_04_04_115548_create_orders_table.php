@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->autoIncrement();
+            $table->unsignedBigInteger('id')->autoIncrement(100);
             $table->unsignedBigInteger('customer_id');
             $table->enum('order_status', ['Completed', 'Ordered'])->nullable(true)->default(null);
             $table->json('order_data');
@@ -24,6 +24,8 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        DB::statement('ALTER TABLE orders AUTO_INCREMENT = 100');
     }
 
     /**

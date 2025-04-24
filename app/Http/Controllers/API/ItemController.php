@@ -66,7 +66,7 @@ class ItemController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => ($validator->messages()),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => ($firstError = $validator->messages()->first()),], 200);
         }
 
 
@@ -110,7 +110,7 @@ class ItemController extends Controller
         //     'id'=>'required'
         // ]);
         // if($validator->fails()){
-        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         // }
 
 
@@ -169,7 +169,7 @@ class ItemController extends Controller
 
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
         $item = Item::find($request->id);
         $item->name = $request->name;
