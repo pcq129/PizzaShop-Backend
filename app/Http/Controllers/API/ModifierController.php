@@ -33,6 +33,9 @@ use Illuminate\Validation\Rule;
      */
     public function index()
     {
+        if (!auth()->user()->can('view_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $modifiers = Modifier::with(['ModifierGroups'=> function($query){
             $query->select ('modifier_groups.name');
         }])->get();
@@ -47,6 +50,9 @@ use Illuminate\Validation\Rule;
     }
 
     public function getList(){
+        if (!auth()->user()->can('view_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $modifier_group = ModifierGroup::all(['name', 'id']);
         return $modifier_group;
     }
@@ -57,6 +63,9 @@ use Illuminate\Validation\Rule;
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->can('add_edit_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'name' => ['required','string','max:50',Rule::unique('modifiers', 'name')->withoutTrashed()],
             // 'name' => 'required|string|max:50|unique:App\Models\Modifier,name',
@@ -93,6 +102,9 @@ use Illuminate\Validation\Rule;
     }
 
     public function getModifierByModifierGroupId(Request $request){
+        if (!auth()->user()->can('view_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'id'=>'required'
         ]);
@@ -109,7 +121,9 @@ use Illuminate\Validation\Rule;
      * Display the specified resource.
      */
     public function show($id)
-    {
+    { if (!auth()->user()->can('view_modifier')) {
+        abort(403, 'Unauthorized action.');
+    }
 
         // $validator = Validator::make($request->all(), [
         //     'id'=>'required'
@@ -140,6 +154,9 @@ use Illuminate\Validation\Rule;
      */
     public function update(Request $request)
     {
+        if (!auth()->user()->can('add_edit_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $modifier = Modifier::find($request->id);
 
         $validator = Validator::make($request->all(), [
@@ -180,6 +197,9 @@ use Illuminate\Validation\Rule;
      */
     public function destroy($id)
     {
+        if (!auth()->user()->can('delete_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
 
         // $validator = Validator::make($id->all(), [
         //     'id'=>'required'
@@ -207,6 +227,9 @@ use Illuminate\Validation\Rule;
     }
 
     public function search_modifier($search){
+        if (!auth()->user()->can('view_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $modifier = Modifier::where('name', 'like', "%$search%")->get();
         if($modifier->count()>=1){
             return response()->json([

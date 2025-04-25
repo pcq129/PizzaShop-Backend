@@ -21,7 +21,9 @@ class ItemController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
+    { if (!auth()->user()->can('view_item')) {
+        abort(403, 'Unauthorized action.');
+    }
         $items = Item::with(['Category' => function ($query) {
             $query->select('item_categories.id', 'name');
         }, 'ModifierGroups' => function ($query) {
@@ -41,7 +43,9 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-
+        if (!auth()->user()->can('add_edit_item')) {
+            abort(403, 'Unauthorized action.');
+        }
 
 
 
@@ -105,7 +109,9 @@ class ItemController extends Controller
      */
     public function show($id)
     {
-
+        if (!auth()->user()->can('view_item')) {
+            abort(403, 'Unauthorized action.');
+        }
         // $validator = Validator::make($request->all(), [
         //     'id'=>'required'
         // ]);
@@ -134,7 +140,9 @@ class ItemController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request)
-    {
+    { if (!auth()->user()->can('add_edit_item')) {
+        abort(403, 'Unauthorized action.');
+    }
         $item = Item::find($request->id);
         // dd($request);
         $validator = Validator::make($request->all(), [
@@ -211,7 +219,9 @@ class ItemController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
+    { if (!auth()->user()->can('delete_item')) {
+        abort(403, 'Unauthorized action.');
+    }
         $item = Item::find($id);
         if ($item) {
             $item->delete();
@@ -230,7 +240,9 @@ class ItemController extends Controller
     }
 
     public function image(Request $request)
-    {
+    { if (!auth()->user()->can('add_edit_item')) {
+        abort(403, 'Unauthorized action.');
+    }
         if (!$request->hasFile('image')) {
             return response()->json(['message' => 'No file uploaded'], 400);
         }
@@ -257,6 +269,9 @@ class ItemController extends Controller
     }
 
     public function search_item($search){
+        if (!auth()->user()->can('view_item')) {
+            abort(403, 'Unauthorized action.');
+        }
         $item = Item::where('name', 'like', "%$search%")->get();
         if($item->count()>=1){
             return response()->json([

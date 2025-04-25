@@ -16,6 +16,10 @@ class SectionController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->can('view_section')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $section = Section::with('tables')->get();
         return response()->json([
             'code'=>'200',
@@ -26,6 +30,10 @@ class SectionController extends Controller
     }
 
     public function waiting_token(){
+
+        if (!auth()->user()->can('view_section|view_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
         $tokens = Section::with(['customers'=>function ($query){
             $query->where('customers.status', 1);
         }])->get();
@@ -45,6 +53,9 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->can('view_section')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'name'=> [Rule::Unique('sections', 'name')->withoutTrashed()],
         ],
@@ -75,6 +86,9 @@ class SectionController extends Controller
      */
     public function show($id)
     {
+        if (!auth()->user()->can('view_section')) {
+            abort(403, 'Unauthorized action.');
+        }
         $section = Section::find($id);
         if($section){
             return response()->json([
@@ -95,7 +109,9 @@ class SectionController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request)
-    {
+    {if (!auth()->user()->can('add_edit_section')) {
+        abort(403, 'Unauthorized action.');
+    }
         $validator = Validator::make($request->all(), [
             'id'=> ['required'],
             'name'=> [Rule::Unique('sections', 'name')->ignore($request->id)->withoutTrashed()],
@@ -122,6 +138,9 @@ class SectionController extends Controller
      */
     public function destroy($id)
     {
+        if (!auth()->user()->can('delete_section')) {
+            abort(403, 'Unauthorized action.');
+        }
         $section = Section::find($id);
         if ($section) {
             // $section->tables()->where('status','Available')->delete();

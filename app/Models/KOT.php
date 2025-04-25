@@ -18,6 +18,9 @@ class KOT extends Model
      */
     public function order(): BelongsTo
     {
+        if (!auth()->user()->can('view_kot')) {
+            abort(403, 'Unauthorized action.');
+        }
         return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 

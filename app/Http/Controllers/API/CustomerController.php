@@ -17,6 +17,9 @@ class CustomerController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->can('view_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
         $customers = Customer::with('orders')->get();
         return response()->json([
             "code" => "200",
@@ -28,6 +31,11 @@ class CustomerController extends Controller
 
     public function waiting_token()
     {
+
+        if (!auth()->user()->can('view_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $tokens = Customer::with('section')->where('status', 1)->get();
         dd($tokens);
         return response()->json([
@@ -38,27 +46,16 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
      */
     public function search_customer(Request $request)
     {
+
+        if (!auth()->user()->can('view_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $search = $request->email;
         $section_id = $request->sectionId;
@@ -83,33 +80,12 @@ class CustomerController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customer $customer)
-    {
-        //
-    }
 
     public function assign_table(Request $request)
     {
-
+        if (!auth()->user()->can('add_edit_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'table_ids' => ['array', 'required'],
             'email' => ['email', 'required'],
@@ -193,7 +169,9 @@ class CustomerController extends Controller
     //function for adding customer to waiting lists
 
     public function create_waiting_token(Request $request)
-    {
+    {if (!auth()->user()->can('add_edit_customer')) {
+        abort(403, 'Unauthorized action.');
+    }
         $customer_id = null;
         $customer = Customer::where('email', $request->email)->first();
         if ($customer) {
@@ -255,6 +233,9 @@ class CustomerController extends Controller
 
     public function update_waiting_token(Request $request)
     {
+        if (!auth()->user()->can('add_edit_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
         $id = $request->id;
         $customer = Customer::find($id);
         // dd($customer);
@@ -296,6 +277,9 @@ class CustomerController extends Controller
     }
 
     public function search_customer_by_name($search){
+        if (!auth()->user()->can('view_customer')) {
+            abort(403, 'Unauthorized action.');
+        }
         $customers = Customer::where('name', 'like', "%$search%")->get();
         if($customers->count()>=1){
             return response()->json([

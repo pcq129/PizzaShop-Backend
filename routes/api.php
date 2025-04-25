@@ -37,6 +37,11 @@ use App\Models\Section;
 // });
 
 
+
+
+
+
+
 // add in [] in middleware group to implement
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -72,7 +77,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/dashboard/{filter}', [OrderController::class, 'dashboard_data']);
     Route::post('/customer-feedback', [OrderController::class, 'customerFeedback']);
     Route::resource('/kots', KOTController::class);
-
+    Route::get('/roles', [UserController::class, 'getRoles']);
 
 
     Route::get('/export-excel/{filter}', [OrderController::class, 'exportToExcel']);

@@ -15,6 +15,9 @@ class TaxFeeController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->can('view_tax')) {
+            abort(403, 'Unauthorized action.');
+        }
         $taxes = TaxFee::all();
         return response()->json([
             'code' => '200',
@@ -30,6 +33,9 @@ class TaxFeeController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->can('add_edit_tax')) {
+            abort(403, 'Unauthorized action.');
+        }
 
 
         $validator = Validator::make($request->all(), [
@@ -70,6 +76,9 @@ class TaxFeeController extends Controller
     //   }
     public function toggle($id, Request $request)
     {
+        if (!auth()->user()->can('add_edit_tax')) {
+            abort(403, 'Unauthorized action.');
+        }
         $field = $request->toggle;
         $tax = TaxFee::find($id);
         $tax->$field = $request->state;
@@ -87,6 +96,9 @@ class TaxFeeController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!auth()->user()->can('add_edit_tax')) {
+            abort(403, 'Unauthorized action.');
+        }
 
 
 
@@ -124,6 +136,9 @@ class TaxFeeController extends Controller
      */
     public function destroy($id)
     {
+        if (!auth()->user()->can('delete_tax')) {
+            abort(403, 'Unauthorized action.');
+        }
         $tax = TaxFee::findOrFail($id);
         if ($tax) {
             $tax->delete();
@@ -142,6 +157,9 @@ class TaxFeeController extends Controller
 
     public function search_tax($search)
     {
+        if (!auth()->user()->can('view_tax')) {
+            abort(403, 'Unauthorized action.');
+        }
         $tax = TaxFee::where('name', 'like', "%$search%")->get();
         if ($tax->count() >= 1) {
             return response()->json([

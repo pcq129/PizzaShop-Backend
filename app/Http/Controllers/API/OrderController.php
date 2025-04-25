@@ -27,6 +27,9 @@ class OrderController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->can('view_order')) {
+            abort(403, 'Unauthorized action.');
+        }
         $orders = Order::with('customer')->orderBy('created_at', 'desc')->get();
         if ($orders) {
             return response()->json([
@@ -46,6 +49,9 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        if (!auth()->user()->can('view_order')) {
+            abort(403, 'Unauthorized action.');
+        }
         $orders = Order::with('customer')->where('id', 'like', "%$id%")->get();
         if ($orders->count() >= 1) {
             return response()->json([
@@ -71,6 +77,9 @@ class OrderController extends Controller
     // placing new order
     public function store(Request $request)
     {
+        if (!auth()->user()->can('add_edit_order')) {
+            abort(403, 'Unauthorized action.');
+        }
         // dd($request->order_data);
 
         $validator = Validator::make($request->all(), [
@@ -136,7 +145,9 @@ class OrderController extends Controller
      */
     public function complete_order($id)
     {
-
+        if (!auth()->user()->can('add_edit_order')) {
+            abort(403, 'Unauthorized action.');
+        }
 
         // $validator = Validator::make([$id], ['numeric', 'required']);
 
@@ -167,7 +178,9 @@ class OrderController extends Controller
 
     public function cancel_order(Request $request)
     {
-
+        if (!auth()->user()->can('add_edit_order')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'table_ids' => ['array', 'required'],
             'customer_id' => ['required', 'numeric'],
@@ -210,6 +223,9 @@ class OrderController extends Controller
 
     public function customerFeedback(Request $request)
     {
+        if (!auth()->user()->can('add_edit_order')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'orderId' => ['numeric', 'required'],
         ]);
@@ -241,6 +257,9 @@ class OrderController extends Controller
 
     public function dashboard_data($filter)
     {
+        if (!auth()->user()->can('view_order')) {
+            abort(403, 'Unauthorized action.');
+        }
         switch ($filter) {
             case 0:
                 $timeSpan = 1;
@@ -443,9 +462,6 @@ class OrderController extends Controller
         for ($day = 0; $day <= $filterSpan; $day++) {
             $date = $filterStartDate->addDays(1);
             $dateString = $date->toDateString();
-            $revenue_labels[] = $date->day;
-            $revenue_data[] = isset($daily_revenue[$dateString]) ? $daily_revenue[$dateString] : 0;
-
             $customer_growth_labels[] = $date->day;
             $custome_growth_data[] = isset($customer_growth[$dateString]) ? $customer_growth[$dateString] : 0;
         }
@@ -487,6 +503,9 @@ class OrderController extends Controller
 
     public function exportToExcel($filter)
     {
+        if (!auth()->user()->can('view_order')) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $filters = ['id' => $filter];
         $order_data = "";

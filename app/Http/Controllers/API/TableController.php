@@ -17,6 +17,9 @@ class TableController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->can('view_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         $table = Table::all();
         return response()->json([
             'code' => '200',
@@ -31,6 +34,9 @@ class TableController extends Controller
      */
     public function index_by_section($id)
     {
+        if (!auth()->user()->can('view_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         $section = Section::with('tables')->find($id);
         // dd($section);
         // $table = $section->tables();
@@ -48,16 +54,19 @@ class TableController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->can('add_edit_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         // dd($request->name);
         $validator = Validator::make($request->all(), [
             'name' => [Rule::Unique('tables', 'name')->withoutTrashed(), 'required'],
             'status' => ['required', Rule::in(['Available', 'Running', 'Assigned'])],
             'capacity' => ['required', 'numeric', 'between:1,25'],
             'section_id' => ['numeric', 'lt:99'],
-        ],$message = ['name.unique' => 'Table already exists']);
+        ], $message = ['name.unique' => 'Table already exists']);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' =>$firstError = $validator->messages()->first(),], 200);
+            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
         $table = new Table();
@@ -82,6 +91,9 @@ class TableController extends Controller
      */
     public function show($id)
     {
+        if (!auth()->user()->can('view_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         $table = Table::find($id);
         if ($table) {
             return response()->json([
@@ -105,13 +117,16 @@ class TableController extends Controller
      */
     public function update(Request $request)
     {
+        if (!auth()->user()->can('add_edit_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'id' => ['required'],
             'name' => [Rule::Unique('tables', 'name')->ignore($request->id)->withoutTrashed(), 'required'],
             'status' => ['required', Rule::in(['Available', 'Running', 'Assigned'])],
             'capacity' => ['required', 'numeric', 'between:1,25'],
             'section_id' => ['numeric', 'lt:99'],
-        ],$message = ['name.unique' => 'Table already exists']);
+        ], $message = ['name.unique' => 'Table already exists']);
 
         if ($validator->fails()) {
             return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
@@ -138,6 +153,9 @@ class TableController extends Controller
      */
     public function destroy($id)
     {
+        if (!auth()->user()->can('delete_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         $table = Table::find($id);
 
         // dd($table->status);
@@ -149,8 +167,7 @@ class TableController extends Controller
                 'status' => 'true',
                 'message' => 'Table deleted successfully'
             ], 200);
-        }
-        else if($table && $table->status == "Running"){
+        } else if ($table && $table->status == "Running") {
             return response()->json([
                 'code' => '200',
                 'status' => 'false',
@@ -164,16 +181,20 @@ class TableController extends Controller
         ], 200);
     }
 
-    public function search_table($search){
+    public function search_table($search)
+    {
+        if (!auth()->user()->can('view_table')) {
+            abort(403, 'Unauthorized action.');
+        }
         $tables = Table::where('name', 'like', "%$search%")->get();
-        if($tables->count()>=1){
+        if ($tables->count() >= 1) {
             return response()->json([
                 'code' => '200',
                 'status' => 'true',
-                'data'=> $tables,
+                'data' => $tables,
                 'message' => 'Tables found'
             ],  200);
-        }else{
+        } else {
             return response()->json([
                 'code' => '404',
                 'status' => 'false',

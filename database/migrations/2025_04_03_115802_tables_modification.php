@@ -24,7 +24,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tables', function (Blueprint $table) {
-            $table->dropColumn('assigned_to');
         });
     }
 };

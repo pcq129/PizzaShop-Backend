@@ -26,7 +26,9 @@ return new class extends Migration
             $table->string('state', 17)->default('Gujarat');
             $table->string('city', 17)->default('Ahmedabad');
             $table->integer('zipcode')->default('380041');
-            $table->tinyInteger('role')->required()->default(1);
+
+            // SPATIE DONT ALLOW ROLE COLUMN
+            // $table->tinyInteger('role')->required()->default(1);
             // 1=admin, 2=acc. manager, 3=customer
             $table->string('password', 180)->required();
             $table->timestamp('email_verified_at')->nullable();

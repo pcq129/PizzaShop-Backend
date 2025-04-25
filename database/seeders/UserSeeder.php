@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UserSeeder extends Seeder
 {
@@ -13,18 +16,65 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-        \App\Models\User::factory(1)->create();
+        // \App\Models\User::factory(1)->create();
 
-        // \App\Models\users::factory()->create([
-        //     'first_name' => fake()->firstName(),
-        //     'last_name' => fake()->lastName(),
-        //     'user_name' => fake()->userName(),
-        //     'phone'=> fake()->phoneNumber(),
-        //     'address'=> fake()->address(),
-        //     'email' => fake()->unique()->safeEmail(),
-        //     'email_verified_at' => now(),
-        //     'password' => '$efewfaer', // password
-        //     'remember_token' => Str::random(10),
-        // ]);
+
+        $super_admin = User::factory()->create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'user_name' => 'SuperAdmin',
+            'phone' => '9099102310',
+            'address' => 'Ahmedabad, Gujarat',
+            'email' => 'superadmin@tatvasoft.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('#Harmit'),
+            'remember_token' => Str::random(10),
+        ]);
+
+        $super_admin->assignRole('super_admin');
+
+
+        $super_admin->save();
+
+
+        $account_manager = User::factory()->create([
+            'first_name' => 'Account',
+            'last_name' => 'Manager',
+            'user_name' => 'AccountManager',
+            'phone' => '9099102310',
+            'address' => 'Ahmedabad, Gujarat',
+            'email' => 'accountmanager@tatvasoft.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('#Harmit'),
+            'remember_token' => Str::random(10),
+        ]);
+
+        $account_manager->assignRole('account_manager');
+
+
+        $account_manager->save();
+
+
+
+        $chef = User::factory()->create([
+            'first_name' => 'Kitchen',
+            'last_name' => 'Chef',
+            'user_name' => 'Chef',
+            'phone' => '9099102310',
+            'address' => 'Ahmedabad, Gujarat',
+            'email' => 'chef@tatvasoft.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('#Harmit'),
+            'remember_token' => Str::random(10),
+        ]);
+
+        $chef->assignRole('chef');
+
+
+        $chef->save();
+
     }
+
+
+
 }

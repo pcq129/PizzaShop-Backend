@@ -1,0 +1,110 @@
+if (!auth()->user()->can('view_section')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+
+
+'user','role_permission','item','modifier','table', 'section','tax','order','customer','kot'
+
+
+all: [
+      Spatie\Permission\Models\Permission {#6405
+        name: "add_edit_customer",
+      },
+      Spatie\Permission\Models\Permission {#6406
+        name: "add_edit_fee",
+      },
+      Spatie\Permission\Models\Permission {#6407
+        name: "add_edit_item",
+      },
+      Spatie\Permission\Models\Permission {#6408
+        name: "add_edit_kot",
+      },
+      Spatie\Permission\Models\Permission {#6409
+        name: "add_edit_modifier",
+      },
+      Spatie\Permission\Models\Permission {#6410
+        name: "add_edit_order",
+      },
+      Spatie\Permission\Models\Permission {#6411
+        name: "add_edit_role_permission",
+      },
+      Spatie\Permission\Models\Permission {#6412
+        name: "add_edit_section",
+      },
+      Spatie\Permission\Models\Permission {#6413
+        name: "add_edit_table",
+      },
+      Spatie\Permission\Models\Permission {#6414
+        name: "add_edit_tax",
+      },
+      Spatie\Permission\Models\Permission {#6415
+        name: "add_edit_user",
+      },
+      Spatie\Permission\Models\Permission {#6416
+        name: "delete_customer",
+      },
+      Spatie\Permission\Models\Permission {#6417
+        name: "delete_fee",
+      },
+      Spatie\Permission\Models\Permission {#6418
+        name: "delete_item",
+      },
+      Spatie\Permission\Models\Permission {#6419
+        name: "delete_kot",
+      },
+      Spatie\Permission\Models\Permission {#6420
+        name: "delete_modifier",
+      },
+      Spatie\Permission\Models\Permission {#6421
+        name: "delete_order",
+      },
+      Spatie\Permission\Models\Permission {#6422
+        name: "delete_role_permission",
+      },
+      Spatie\Permission\Models\Permission {#6423
+        name: "delete_section",
+      },
+      Spatie\Permission\Models\Permission {#6424
+        name: "delete_table",
+      },
+      Spatie\Permission\Models\Permission {#6425
+        name: "delete_tax",
+      },
+      Spatie\Permission\Models\Permission {#6426
+        name: "delete_user",
+      },
+      Spatie\Permission\Models\Permission {#6427
+        name: "view_customer",
+      },
+      Spatie\Permission\Models\Permission {#6428
+        name: "view_fee",
+      },
+      Spatie\Permission\Models\Permission {#6429
+        name: "view_item",
+      },
+      Spatie\Permission\Models\Permission {#6430
+        name: "view_kot",
+      },
+      Spatie\Permission\Models\Permission {#6431
+        name: "view_modifier",
+      },
+      Spatie\Permission\Models\Permission {#6432
+        name: "view_order",
+      },
+      Spatie\Permission\Models\Permission {#6433
+        name: "view_role_permission",
+      },
+      Spatie\Permission\Models\Permission {#6434
+        name: "view_section",
+      },
+      Spatie\Permission\Models\Permission {#6435
+        name: "view_table",
+      },
+      Spatie\Permission\Models\Permission {#6436
+        name: "view_tax",
+      },
+      Spatie\Permission\Models\Permission {#6437
+        name: "view_user",
+      },
+    ],

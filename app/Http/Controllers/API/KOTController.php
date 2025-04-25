@@ -13,7 +13,9 @@ class KOTController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
+    { if (!auth()->user()->can('view_kot')) {
+        abort(403, 'Unauthorized action.');
+    }
         $kots = ItemCategory::has('kots')->with('kots.order')->get();
         if($kots){
             return response()->json([

@@ -14,7 +14,9 @@ class ModifierGroupController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
+    { if (!auth()->user()->can('view_modifier')) {
+        abort(403, 'Unauthorized action.');
+    }
         $modifierGroup = ModifierGroup::with('Modifiers.ModifierGroups')->get();
         return response()->json([
             "code" => "201",
@@ -30,6 +32,9 @@ class ModifierGroupController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->can('add_edit_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'name' => ['required','string','max:50',Rule::unique('modifier_groups', 'name')->withoutTrashed()],
             // 'name' => 'required|string|max:50|unique:App\Models\ModifierGroup,name',
@@ -58,7 +63,9 @@ class ModifierGroupController extends Controller
      */
     public function show($id)
     {
-
+        if (!auth()->user()->can('view_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         // $validator = Validator::make($request->all(), [
         //     'id'=>'required'
         // ]);
@@ -88,7 +95,9 @@ class ModifierGroupController extends Controller
      */
     public function update(Request $request)
     {
-
+        if (!auth()->user()->can('add_edit_modifier')) {
+            abort(403, 'Unauthorized action.');
+        }
         $modifierGroup = ModifierGroup::find($request->id);
 
 
@@ -128,7 +137,9 @@ class ModifierGroupController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
+    { if (!auth()->user()->can('delete_modifier')) {
+        abort(403, 'Unauthorized action.');
+    }
         $modifierGroup = ModifierGroup::find($id);
         if ($modifierGroup) {
             $modifierGroup->delete();

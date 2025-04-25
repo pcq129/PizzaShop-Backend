@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +25,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        if (!auth()->user()->can('view_user')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $users = User::with(['roles:id,name'])->get();
         return response()->json([
             'code' => '200',
             'status' => 'true',
@@ -35,7 +40,9 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {if (!auth()->user()->can('add_edit_user')) {
+        abort(403, 'Unauthorized action.');
+    }
 
         // {
         //     "first_name": "harmit",
@@ -81,13 +88,27 @@ class UserController extends Controller
         $user->email = $request->get('email');
         $user->address = $request->get('address');
         $user->password = bcrypt($request->get('password'));
-        $user->role = $request->get('role');
         $user->zipcode = $request->get('zipcode');
         // if($request->country && $request->state && $request->city){
             $user->state =$request->state;
             $user->country = $request->country;
             $user->city = $request->city;
         // }
+        $role = 'chef';
+        switch($role){
+            case 1: $role = 'chef';
+            break;
+
+            case 2: $role = 'account_manager';
+            break;
+
+            case 3: $role = 'super_admin';
+            break;
+
+            default:
+            $role = 'chef';
+        }
+        $user->assignRole('$role');
         $user->save();
 
         return response()->json([
@@ -98,7 +119,9 @@ class UserController extends Controller
     }
 
     public function update(Request $request)
-    {
+    {if (!auth()->user()->can('add_edit_user')) {
+        abort(403, 'Unauthorized action.');
+    }
 
         // {
         //     "first_name": "harmit",
@@ -144,13 +167,28 @@ class UserController extends Controller
         $user->email = $request->get('email');
         $user->address = $request->get('address');
         $user->password = bcrypt($request->get('password'));
-        $user->role = $request->get('role');
         $user->zipcode = $request->get('zipcode');
         // if($request->country && $request->state && $request->city){
             $user->state =$request->state;
             $user->country = $request->country;
             $user->city = $request->city;
         // }
+        $role = 'chef';
+        switch($role){
+            case 1: $role = 'chef';
+            break;
+
+            case 2: $role = 'account_manager';
+            break;
+
+            case 3: $role = 'super_admin';
+            break;
+
+            default:
+            $role = 'chef';
+        }
+        $user->assignRole('$role');
+
         $user->save();
 
         return response()->json([
@@ -165,7 +203,9 @@ class UserController extends Controller
      */
     public function show(Request $request)
     {
-
+        if (!auth()->user()->can('view_user')) {
+            abort(403, 'Unauthorized action.');
+        }
         $validator = Validator::make($request->all(), [
             'id' => 'required'
         ]);
@@ -173,7 +213,7 @@ class UserController extends Controller
             return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
-        $user = User::find($request->id);
+        $user = User::find($request->id)->with(['roles:id, name'])->get();
         if ($user) {
             return response()->json([
                 'code' => '200',
@@ -194,7 +234,9 @@ class UserController extends Controller
      * Update the specified resource in storage.
      */
     public function update_user(Request $request)
-    {
+    {if (!auth()->user()->can('add_edit_user')) {
+        abort(403, 'Unauthorized action.');
+    }
 
         $validator = Validator::make($request->all(), [
             // 'id' => 'required',
@@ -222,6 +264,7 @@ class UserController extends Controller
         $user->city = $request->get('city');
         $user->zipcode = $request->get('zipcode');
         $user->address = $request->get('address');
+
         $user->update();
         $token = Auth::refresh();
 
@@ -237,7 +280,9 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
+    {if (!auth()->user()->can('delete_user')) {
+        abort(403, 'Unauthorized action.');
+    }
         $user = User::find($id);
         if ($user) {
             $user->delete();
@@ -308,6 +353,9 @@ class UserController extends Controller
 
 
     public function search_user($search){
+        if (!auth()->user()->can('view_user')) {
+            abort(403, 'Unauthorized action.');
+        }
         $table = 'App\Models\User';
         $user = $table::where('user_name', 'like', "%$search%")->get();
         if($user->count()>=1){
@@ -324,5 +372,20 @@ class UserController extends Controller
                 'message' => 'Users not found'
             ],  404);
         }
+    }
+
+    public function getRoles(){
+        if (!auth()->user()->can('add_edit_role_permission')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $roles = Role::with('permissions')->get();
+
+        return response()->json([
+            'code'=>'200',
+            'status'=>'true',
+            'data'=>$roles,
+            'message'=>'Roles fetched successfully'
+        ]);
     }
 }

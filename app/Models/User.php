@@ -10,11 +10,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Contracts\Auth\Access\Authorizable;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 
 class User extends Authenticatable implements JWTSubject, CanResetPassword
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
 
 
     /**
@@ -78,4 +83,8 @@ class User extends Authenticatable implements JWTSubject, CanResetPassword
         'email_verified_at'
 
     ];
+
+
+    protected function getDefaultGuardName(): string { return 'api'; }
+
 }
