@@ -1,4 +1,4 @@
-if (!auth()->user()->can('view_section')) {
+if (!auth()->user()->can('view_table')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -15,13 +15,13 @@ all: [
         name: "add_edit_fee",
       },
       Spatie\Permission\Models\Permission {#6407
-        name: "add_edit_item",
+        name: "add_edit_menu",
       },
       Spatie\Permission\Models\Permission {#6408
         name: "add_edit_kot",
       },
       Spatie\Permission\Models\Permission {#6409
-        name: "add_edit_modifier",
+        name: "add_edit_menu",
       },
       Spatie\Permission\Models\Permission {#6410
         name: "add_edit_order",
@@ -30,7 +30,7 @@ all: [
         name: "add_edit_role_permission",
       },
       Spatie\Permission\Models\Permission {#6412
-        name: "add_edit_section",
+        name: "add_edit_table",
       },
       Spatie\Permission\Models\Permission {#6413
         name: "add_edit_table",
@@ -48,13 +48,13 @@ all: [
         name: "delete_fee",
       },
       Spatie\Permission\Models\Permission {#6418
-        name: "delete_item",
+        name: "delete_menu",
       },
       Spatie\Permission\Models\Permission {#6419
         name: "delete_kot",
       },
       Spatie\Permission\Models\Permission {#6420
-        name: "delete_modifier",
+        name: "delete_menu",
       },
       Spatie\Permission\Models\Permission {#6421
         name: "delete_order",
@@ -63,7 +63,7 @@ all: [
         name: "delete_role_permission",
       },
       Spatie\Permission\Models\Permission {#6423
-        name: "delete_section",
+        name: "delete_table",
       },
       Spatie\Permission\Models\Permission {#6424
         name: "delete_table",
@@ -81,13 +81,13 @@ all: [
         name: "view_fee",
       },
       Spatie\Permission\Models\Permission {#6429
-        name: "view_item",
+        name: "view_menu",
       },
       Spatie\Permission\Models\Permission {#6430
         name: "view_kot",
       },
       Spatie\Permission\Models\Permission {#6431
-        name: "view_modifier",
+        name: "view_menu",
       },
       Spatie\Permission\Models\Permission {#6432
         name: "view_order",
@@ -96,7 +96,7 @@ all: [
         name: "view_role_permission",
       },
       Spatie\Permission\Models\Permission {#6434
-        name: "view_section",
+        name: "view_table",
       },
       Spatie\Permission\Models\Permission {#6435
         name: "view_table",

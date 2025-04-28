@@ -21,7 +21,7 @@ class ItemController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    { if (!auth()->user()->can('view_item')) {
+    { if (!auth()->user()->can('view_menu')) {
         abort(403, 'Unauthorized action.');
     }
         $items = Item::with(['Category' => function ($query) {
@@ -43,7 +43,7 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('add_edit_item')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -109,7 +109,7 @@ class ItemController extends Controller
      */
     public function show($id)
     {
-        if (!auth()->user()->can('view_item')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         // $validator = Validator::make($request->all(), [
@@ -140,7 +140,7 @@ class ItemController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request)
-    { if (!auth()->user()->can('add_edit_item')) {
+    { if (!auth()->user()->can('add_edit_menu')) {
         abort(403, 'Unauthorized action.');
     }
         $item = Item::find($request->id);
@@ -176,9 +176,9 @@ class ItemController extends Controller
         ]);
 
 
-        if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
-        }
+            if ($validator->fails()) {
+                return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
+            }
         $item = Item::find($request->id);
         $item->name = $request->name;
         $item->description = $request->description;
@@ -219,7 +219,7 @@ class ItemController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    { if (!auth()->user()->can('delete_item')) {
+    { if (!auth()->user()->can('delete_menu')) {
         abort(403, 'Unauthorized action.');
     }
         $item = Item::find($id);
@@ -240,7 +240,7 @@ class ItemController extends Controller
     }
 
     public function image(Request $request)
-    { if (!auth()->user()->can('add_edit_item')) {
+    { if (!auth()->user()->can('add_edit_menu')) {
         abort(403, 'Unauthorized action.');
     }
         if (!$request->hasFile('image')) {
@@ -269,7 +269,7 @@ class ItemController extends Controller
     }
 
     public function search_item($search){
-        if (!auth()->user()->can('view_item')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $item = Item::where('name', 'like', "%$search%")->get();

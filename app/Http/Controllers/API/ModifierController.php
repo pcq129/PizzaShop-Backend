@@ -33,7 +33,7 @@ use Illuminate\Validation\Rule;
      */
     public function index()
     {
-        if (!auth()->user()->can('view_modifier')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $modifiers = Modifier::with(['ModifierGroups'=> function($query){
@@ -50,7 +50,7 @@ use Illuminate\Validation\Rule;
     }
 
     public function getList(){
-        if (!auth()->user()->can('view_modifier')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $modifier_group = ModifierGroup::all(['name', 'id']);
@@ -63,7 +63,7 @@ use Illuminate\Validation\Rule;
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('add_edit_modifier')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $validator = Validator::make($request->all(), [
@@ -102,7 +102,7 @@ use Illuminate\Validation\Rule;
     }
 
     public function getModifierByModifierGroupId(Request $request){
-        if (!auth()->user()->can('view_modifier')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $validator = Validator::make($request->all(), [
@@ -121,7 +121,7 @@ use Illuminate\Validation\Rule;
      * Display the specified resource.
      */
     public function show($id)
-    { if (!auth()->user()->can('view_modifier')) {
+    { if (!auth()->user()->can('view_menu')) {
         abort(403, 'Unauthorized action.');
     }
 
@@ -154,7 +154,7 @@ use Illuminate\Validation\Rule;
      */
     public function update(Request $request)
     {
-        if (!auth()->user()->can('add_edit_modifier')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $modifier = Modifier::find($request->id);
@@ -197,7 +197,7 @@ use Illuminate\Validation\Rule;
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('delete_modifier')) {
+        if (!auth()->user()->can('delete_menu')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -227,7 +227,7 @@ use Illuminate\Validation\Rule;
     }
 
     public function search_modifier($search){
-        if (!auth()->user()->can('view_modifier')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $modifier = Modifier::where('name', 'like', "%$search%")->get();

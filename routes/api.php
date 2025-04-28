@@ -16,6 +16,7 @@ use App\Http\Controllers\API\TaxFeeController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\KOTController;
+use App\Http\Controllers\API\RoleController;
 use App\Models\ItemCategory;
 use App\Models\Section;
 
@@ -77,7 +78,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/dashboard/{filter}', [OrderController::class, 'dashboard_data']);
     Route::post('/customer-feedback', [OrderController::class, 'customerFeedback']);
     Route::resource('/kots', KOTController::class);
-    Route::get('/roles', [UserController::class, 'getRoles']);
+    Route::get('/roles', [RoleController::class, 'getRoles']);
+    // Route::resource('/roles', [RoleController::class]);
+    Route::post('/update-role/{id}',[RoleController::class, 'update_role']);
 
 
     Route::get('/export-excel/{filter}', [OrderController::class, 'exportToExcel']);

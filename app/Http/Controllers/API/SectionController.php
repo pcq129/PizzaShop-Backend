@@ -16,7 +16,7 @@ class SectionController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('view_section')) {
+        if (!auth()->user()->can('view_table')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -31,7 +31,7 @@ class SectionController extends Controller
 
     public function waiting_token(){
 
-        if (!auth()->user()->can('view_section|view_customer')) {
+        if (!auth()->user()->can('view_table|view_customer')) {
             abort(403, 'Unauthorized action.');
         }
         $tokens = Section::with(['customers'=>function ($query){
@@ -53,7 +53,7 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('view_section')) {
+        if (!auth()->user()->can('view_table')) {
             abort(403, 'Unauthorized action.');
         }
         $validator = Validator::make($request->all(), [
@@ -86,7 +86,7 @@ class SectionController extends Controller
      */
     public function show($id)
     {
-        if (!auth()->user()->can('view_section')) {
+        if (!auth()->user()->can('view_table')) {
             abort(403, 'Unauthorized action.');
         }
         $section = Section::find($id);
@@ -109,7 +109,7 @@ class SectionController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request)
-    {if (!auth()->user()->can('add_edit_section')) {
+    {if (!auth()->user()->can('add_edit_table')) {
         abort(403, 'Unauthorized action.');
     }
         $validator = Validator::make($request->all(), [
@@ -138,7 +138,7 @@ class SectionController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('delete_section')) {
+        if (!auth()->user()->can('delete_table')) {
             abort(403, 'Unauthorized action.');
         }
         $section = Section::find($id);

@@ -14,6 +14,9 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Eloquent\Casts\Json;
 
 class AuthController extends Controller
 {
@@ -28,11 +31,21 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        $role = User::with('roles:name')->where('email', '=', $request->email)->first()->roles()->get();
         // Attempt to authenticate user
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->respondWithToken($token);
+
+        return response()->json([
+            'code' => 200,
+            'status' => true,
+            'role'=>$role,
+            'access_token'=>$token,
+            'message' => 'Login Successful',
+
+        ]);
+        // return $this->respondWithToken($token);
     }
 
     // User Registration
@@ -91,7 +104,8 @@ class AuthController extends Controller
 
 
     // function for handling forgot password form data
-    public function forgot_password(Request $request) {
+    public function forgot_password(Request $request)
+    {
         $request->validate(['email' => 'required|email']);
         // dd('data');
         $status = Password::sendResetLink(
@@ -102,15 +116,14 @@ class AuthController extends Controller
         );
         // dd($request);
 
-        if($status){
+        if ($status) {
             return response()->json([
                 "status" => $status,
             ]);
-        }
-        else{
+        } else {
             return response()->json([
                 "status" => "not found",
-                "message"=> "User not found"
+                "message" => "User not found"
 
             ]);
         }
@@ -118,7 +131,8 @@ class AuthController extends Controller
 
 
     // function for handling reset password form data
-    public function reset_password(Request $request){
+    public function reset_password(Request $request)
+    {
         // dd($request);
         $validator = Validator::make($request->all(), [
             'password' => ['required'],
@@ -154,7 +168,6 @@ class AuthController extends Controller
 
 
                 event(new PasswordReset($user));
-
             }
 
         );
@@ -162,11 +175,8 @@ class AuthController extends Controller
 
 
         return response()->json([
-            'status'=>$status,
-            'password'=> $password
+            'status' => $status,
+            'password' => $password
         ]);
     }
-
-
 }
-

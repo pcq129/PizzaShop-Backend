@@ -14,7 +14,7 @@ class ModifierGroupController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    { if (!auth()->user()->can('view_modifier')) {
+    { if (!auth()->user()->can('view_menu')) {
         abort(403, 'Unauthorized action.');
     }
         $modifierGroup = ModifierGroup::with('Modifiers.ModifierGroups')->get();
@@ -32,7 +32,7 @@ class ModifierGroupController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('add_edit_modifier')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $validator = Validator::make($request->all(), [
@@ -63,7 +63,7 @@ class ModifierGroupController extends Controller
      */
     public function show($id)
     {
-        if (!auth()->user()->can('view_modifier')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         // $validator = Validator::make($request->all(), [
@@ -95,7 +95,7 @@ class ModifierGroupController extends Controller
      */
     public function update(Request $request)
     {
-        if (!auth()->user()->can('add_edit_modifier')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $modifierGroup = ModifierGroup::find($request->id);
@@ -137,7 +137,7 @@ class ModifierGroupController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    { if (!auth()->user()->can('delete_modifier')) {
+    { if (!auth()->user()->can('delete_menu')) {
         abort(403, 'Unauthorized action.');
     }
         $modifierGroup = ModifierGroup::find($id);

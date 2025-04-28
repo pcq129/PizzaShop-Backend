@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
         $account_manager = Role::create(['name' => 'account_manager']);
         $chef = Role::create(['name' => 'chef']);
 
-        $all_permissions = $this->create_permissions(['user','role_permission','item','modifier','table', 'section','tax','fee','order','customer','kot']);
+        $all_permissions = $this->create_permissions(['user','role_permission','menu','table','tax','fee','order','customer','kot']);
 
 
         $account_manager->syncPermissions($all_permissions);

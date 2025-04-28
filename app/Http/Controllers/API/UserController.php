@@ -374,18 +374,5 @@ class UserController extends Controller
         }
     }
 
-    public function getRoles(){
-        if (!auth()->user()->can('add_edit_role_permission')) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $roles = Role::with('permissions')->get();
-
-        return response()->json([
-            'code'=>'200',
-            'status'=>'true',
-            'data'=>$roles,
-            'message'=>'Roles fetched successfully'
-        ]);
-    }
+    
 }

@@ -16,7 +16,7 @@ class ItemCategoryController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('view_item')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $categories = ItemCategory::with('Items.ModifierGroups')->get();
@@ -40,7 +40,7 @@ class ItemCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('add_edit_item')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $validator = Validator::make($request->all(), [
@@ -84,7 +84,7 @@ class ItemCategoryController extends Controller
         //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $validator->messages(),], 200);
         // }
 
-        if (!auth()->user()->can('view_item')) {
+        if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $itemCategory = ItemCategory::find($id);
@@ -108,7 +108,7 @@ class ItemCategoryController extends Controller
     //  */
     public function update(Request $request)
     {
-        if (!auth()->user()->can('add_edit_item')) {
+        if (!auth()->user()->can('add_edit_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $itemCategory = ItemCategory::find($request->id);
@@ -153,7 +153,7 @@ class ItemCategoryController extends Controller
     //  * Remove the specified resource from storage.
     //  */
     public function destroy($id)
-    { if (!auth()->user()->can('delete_item')) {
+    { if (!auth()->user()->can('delete_menu')) {
         abort(403, 'Unauthorized action.');
     }
         $itemCategory = ItemCategory::find($id);
