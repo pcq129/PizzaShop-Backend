@@ -73,7 +73,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/order', [OrderController::class, 'cancel_order']);
     Route::post('/customer/search', [CustomerController::class, 'search_customer']);
     Route::post('/update-password', [UserController::class, 'update_password']);
-    Route::post('/update-profile', [UserController::class, 'update_user']);
+    Route::post('/update-profile', [UserController::class, 'updat   e_user']);
     Route::get('/userdata', [AuthController::class, 'me']);
     Route::get('/dashboard/{filter}', [OrderController::class, 'dashboard_data']);
     Route::post('/customer-feedback', [OrderController::class, 'customerFeedback']);

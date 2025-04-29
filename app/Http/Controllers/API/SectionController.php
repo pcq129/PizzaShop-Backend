@@ -31,7 +31,7 @@ class SectionController extends Controller
 
     public function waiting_token(){
 
-        if (!auth()->user()->can('view_table|view_customer')) {
+        if (!auth()->user()->can('view_table')) {
             abort(403, 'Unauthorized action.');
         }
         $tokens = Section::with(['customers'=>function ($query){

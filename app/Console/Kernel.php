@@ -12,7 +12,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $tables = Table::where('status', 'Assigned')->get();
+            foreach ($tables as $table) {
+                $table->status = 'Available';
+                $table->save();
+            }
+        })->daily();
     }
 
     /**

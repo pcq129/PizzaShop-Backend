@@ -161,6 +161,20 @@ class OrderController extends Controller
         $order->payment_status = 'Completed';
         $order->payment_mode = "Cash";
 
+        $kots = KOT::where('order_id', $order->id)->get();
+
+        // Delete each KOT
+        foreach ($kots as $singleKot) {
+            $singleKot->delete();
+        }
+        
+        // $kot = KOT::where('id', $id);
+        // dd($kot);
+        // foreach ($kot as $singleKot) {
+        //     dd($singleKot);
+        //     $singleKot->delete();
+        // }
+
         $table_ids = json_decode($order->order_data)->table_ids;
         // dd($table_ids);
         Table::whereIn('id', $table_ids)->update(['status' => 'Available']);

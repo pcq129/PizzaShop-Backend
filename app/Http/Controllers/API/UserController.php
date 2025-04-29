@@ -96,19 +96,19 @@ class UserController extends Controller
         // }
         $role = 'chef';
         switch($role){
-            case 1: $role = 'chef';
+            case 1: $role = 'super_admin';
             break;
 
             case 2: $role = 'account_manager';
             break;
 
-            case 3: $role = 'super_admin';
+            case 3: $role = 'chef';
             break;
 
             default:
             $role = 'chef';
         }
-        $user->assignRole('$role');
+        $user->syncRoles(['$role']);
         $user->save();
 
         return response()->json([
@@ -175,19 +175,19 @@ class UserController extends Controller
         // }
         $role = 'chef';
         switch($role){
-            case 1: $role = 'chef';
+            case 1: $role = 'super_admin';
             break;
 
             case 2: $role = 'account_manager';
             break;
 
-            case 3: $role = 'super_admin';
+            case 3: $role = 'chef';
             break;
 
             default:
             $role = 'chef';
         }
-        $user->assignRole('$role');
+        $user->syncRoles(['$role']);
 
         $user->save();
 
@@ -374,5 +374,5 @@ class UserController extends Controller
         }
     }
 
-    
+
 }
