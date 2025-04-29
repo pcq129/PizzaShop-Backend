@@ -167,7 +167,7 @@ class OrderController extends Controller
         foreach ($kots as $singleKot) {
             $singleKot->delete();
         }
-        
+
         // $kot = KOT::where('id', $id);
         // dd($kot);
         // foreach ($kot as $singleKot) {
