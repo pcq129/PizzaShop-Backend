@@ -68,7 +68,7 @@ class UserController extends Controller
             'phone' => 'required|max_digits:12|min_digits:10|numeric',
             'address' => 'required|string|max:180',
             'password' => 'required|string|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|min:6',
-            'role' => 'numeric|max:5',
+            'role' => 'string|required',
             'zipcode'=> 'required|numeric',
             'state'=> 'required|max:50',
             'country'=> 'required|max:50',
@@ -94,21 +94,8 @@ class UserController extends Controller
             $user->country = $request->country;
             $user->city = $request->city;
         // }
-        $role = 'chef';
-        switch($role){
-            case 1: $role = 'super_admin';
-            break;
 
-            case 2: $role = 'account_manager';
-            break;
-
-            case 3: $role = 'chef';
-            break;
-
-            default:
-            $role = 'chef';
-        }
-        $user->syncRoles(['$role']);
+        $user->syncRoles([$request->role]);
         $user->save();
 
         return response()->json([
@@ -147,7 +134,7 @@ class UserController extends Controller
             'last_name' => 'required|string|max:50',
             'phone' => 'required|max_digits:12|min_digits:10|numeric',
             'address' => 'required|string|max:180',
-            'role' => 'numeric|max:5',
+            'role' => 'string|required',
             'zipcode'=> 'required|numeric',
             'state'=> 'required|max:50',
             'country'=> 'required|max:50',
@@ -187,7 +174,7 @@ class UserController extends Controller
             default:
             $role = 'chef';
         }
-        $user->syncRoles(['$role']);
+        $user->syncRoles([$request->role]);
 
         $user->save();
 

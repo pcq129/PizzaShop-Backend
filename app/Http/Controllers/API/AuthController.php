@@ -31,11 +31,12 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        $role = User::with('roles:name')->where('email', '=', $request->email)->first()->roles()->get();
         // Attempt to authenticate user
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        $role = User::with('roles:name')->where('email', '=', $request->email)->first()->roles()->get();
 
         return response()->json([
             'code' => 200,

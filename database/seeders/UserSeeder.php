@@ -37,41 +37,41 @@ class UserSeeder extends Seeder
         $super_admin->save();
 
 
-        $account_manager = User::factory()->create([
-            'first_name' => 'Account',
-            'last_name' => 'Manager',
-            'user_name' => 'AccountManager',
-            'phone' => '9099102310',
-            'address' => 'Ahmedabad, Gujarat',
-            'email' => 'accountmanager@tatvasoft.com',
-            'email_verified_at' => now(),
-            'password' => bcrypt('#Harmit'),
-            'remember_token' => Str::random(10),
-        ]);
+        // $account_manager = User::factory()->create([
+        //     'first_name' => 'Account',
+        //     'last_name' => 'Manager',
+        //     'user_name' => 'AccountManager',
+        //     'phone' => '9099102310',
+        //     'address' => 'Ahmedabad, Gujarat',
+        //     'email' => 'accountmanager@tatvasoft.com',
+        //     'email_verified_at' => now(),
+        //     'password' => bcrypt('#Harmit'),
+        //     'remember_token' => Str::random(10),
+        // ]);
 
-        $account_manager->assignRole('account_manager');
-
-
-        $account_manager->save();
+        // $account_manager->assignRole('account_manager');
 
 
-
-        $chef = User::factory()->create([
-            'first_name' => 'Kitchen',
-            'last_name' => 'Chef',
-            'user_name' => 'Chef',
-            'phone' => '9099102310',
-            'address' => 'Ahmedabad, Gujarat',
-            'email' => 'chef@tatvasoft.com',
-            'email_verified_at' => now(),
-            'password' => bcrypt('#Harmit'),
-            'remember_token' => Str::random(10),
-        ]);
-
-        $chef->assignRole('chef');
+        // $account_manager->save();
 
 
-        $chef->save();
+
+        // $chef = User::factory()->create([
+        //     'first_name' => 'Kitchen',
+        //     'last_name' => 'Chef',
+        //     'user_name' => 'Chef',
+        //     'phone' => '9099102310',
+        //     'address' => 'Ahmedabad, Gujarat',
+        //     'email' => 'chef@tatvasoft.com',
+        //     'email_verified_at' => now(),
+        //     'password' => bcrypt('#Harmit'),
+        //     'remember_token' => Str::random(10),
+        // ]);
+
+        // $chef->assignRole('chef');
+
+
+        // $chef->save();
 
     }
 
