@@ -68,29 +68,7 @@ class KOTController extends Controller
         ]);
     }
 
-    public function progress_kots(Request $request)
-    {
-        if (!auth()->user()->can('view_kot')) {
-            abort(403, 'Unauthorized action.');
-        }
 
-
-        $validator = Validator::make($request->all(), [
-            'kotIds' => ['required', 'array']
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
-        }
-
-        KOT::whereIn('id', $request->kotIds)->update(['status' => 0]);
-
-        return response()->json([
-            'code' => 200,
-            'status' => true,
-            'message' => 'KOTs marked as In Progress'
-        ]);
-    }
 
     /**
      * Display a listing of the resource.
@@ -100,7 +78,22 @@ class KOTController extends Controller
         if (!auth()->user()->can('view_kot')) {
             abort(403, 'Unauthorized action.');
         }
-        $kots = ItemCategory::has('kots')->with('kots.order')->get();
+
+        $kots = ItemCategory::with('kots')->get();
+
+        $kots->each(function ($category) {
+            $category->kots = $category->kots->groupBy('order_id');
+        });
+        // $kots = ItemCategory::with('kots'->groupBy('kots.order_id'))->get();
+
+        // $format_kots = $kots->map(function ($item_category) {
+        //     return $item_category->map(fn($kot) => [
+        //         'order_id' => $kot->order_id,
+        //         'kot_id' => $kot->id,
+        //         'status' => $kot->status,
+        //         'item_data' => $kot->item_data
+        //     ])->unique('order_id')->values();
+        // });
         // $allKots = Order::with('kots')->get();
         if ($kots) {
             return response()->json([

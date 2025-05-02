@@ -32,15 +32,15 @@ class TableController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index_by_section($id)
+    public function index_by_section($id, Request $request)
     {
         if (!auth()->user()->can('view_table')) {
             abort(403, 'Unauthorized action.');
         }
-        $section = Section::with('tables')->find($id);
+        $per_page = $request->perPage;
+        $section = Table::where('section_id',$id)->paginate($per_page);
         // dd($section);
         // $table = $section->tables();
-        $table = Table::all();
         return response()->json([
             'code' => '200',
             'status' => 'true',

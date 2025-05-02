@@ -57,6 +57,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/sectionstable/{id}', [TableController::class, 'index_by_section']);
     Route::get('/export-excel/{filter}', [OrderController::class, 'exportToExcel']);
 
+    Route::get('/tables', [TableController::class, 'list_tables']);
+    Route::get('/items', [ItemController::class, 'list_items']);
+    Route::get('/modifiers', [ModifierController::class, 'list_modifiers']);
+
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -83,7 +87,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::resource('/user', UserController::class);
     Route::resource('/order', OrderController::class);
     Route::resource('/table', TableController::class);
-    // Route::resource('/roles', [RoleController::class]); // commented
+    // Route::resource('/roles', [RoleController::class]);
     Route::resource('/section', SectionController::class);
     Route::resource('/tax-fees', TaxFeeController::class);
     Route::resource('/modifier', ModifierController::class);

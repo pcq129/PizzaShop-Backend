@@ -15,12 +15,13 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!auth()->user()->can('view_customer')) {
             abort(403, 'Unauthorized action.');
         }
-        $customers = Customer::with('orders')->get();
+        $per_page = $request->perPage;
+        $customers = Customer::with('orders')->orderBy('created_at', 'desc')->paginate($per_page);
         return response()->json([
             "code" => "200",
             "status" => "true",

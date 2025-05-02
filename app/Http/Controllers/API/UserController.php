@@ -23,12 +23,13 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!auth()->user()->can('view_user')) {
             abort(403, 'Unauthorized action.');
         }
-        $users = User::with(['roles:id,name'])->get();
+        $per_page = $request->perPage;
+        $users = User::with(['roles:id,name'])->paginate($per_page);
         return response()->json([
             'code' => '200',
             'status' => 'true',

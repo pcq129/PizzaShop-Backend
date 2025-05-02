@@ -25,12 +25,14 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!auth()->user()->can('view_order')) {
             abort(403, 'Unauthorized action.');
         }
-        $orders = Order::with('customer')->orderBy('created_at', 'desc')->get();
+
+        $per_page=$request->perPage;
+        $orders = Order::with('customer')->orderBy('created_at', 'desc')->paginate($per_page);
         if ($orders) {
             return response()->json([
                 "code" => "200",
