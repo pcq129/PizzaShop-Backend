@@ -8,6 +8,7 @@ use Nette\Utils\Validators;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\Helper;
 
 
 class RoleController extends Controller
@@ -15,21 +16,25 @@ class RoleController extends Controller
 
 
     public function getRoles(){
+       try {
         if (!auth()->user()->can('add_edit_role_permission')) {
             abort(403, 'Unauthorized action.');
         }
 
         $roles = Role::with('permissions:name')->where('name', '!=','super_admin')->get();
 
-        return response()->json([
-            'code'=>'200',
-            'status'=>'true',
-            'data'=>$roles,
-            'message'=>'Roles fetched successfully'
-        ]);
-    }
+        if($roles->count()>0){
+        return Helper::sendResponse('ok', true, $roles, 'Roles fetched successfully');
+
+        }else{
+            return Helper::sendResponse('no_content', true, null, 'No Roles available');
+        }
+       } catch (\Throwable $th) {
+        return Helper::sendResponse('error', false, $th->getMessage(), 'Error fetching roles');
+       }  }
 
     public function update_role($id, Request $request){
+       try {
         if (!auth()->user()->can('add_edit_role_permission')) {
             abort(403, 'Unauthorized action.');
         }
@@ -39,17 +44,21 @@ class RoleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
+            return Helper::sendResponse('bad_request', false,null, $validator->messages()->first());
+            // return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
         }
 
         $role = Role::find($id);
+        if($role){
         $role->syncPermissions($request->permissions);
-        return response()->json([
-            'code'=>200,
-            'status'=>true,
-            'message'=>'Role Permission Updated Successfully'
-        ]);
+        return Helper::sendResponse('ok', true, null, 'Role updated successfully');
 
+        } else{
+            return Helper::sendResponse('not_found', true, null, 'Role not found');
+        }       
+       } catch (\Throwable $th) {
+        return Helper::sendResponse('error', false, $th->getMessage(), 'Error while updating Role');
+       }
     }
 
 }
