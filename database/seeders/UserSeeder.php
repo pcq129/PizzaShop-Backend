@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             'user_name' => 'SuperAdmin',
             'phone' => '9099102310',
             'address' => 'Ahmedabad, Gujarat',
-            'email' => 'superadmin@tatvasoft.com',
+            'email' => 'super_admin@tatvasoft.com',
             'email_verified_at' => now(),
             'password' => bcrypt('#Harmit'),
             'remember_token' => Str::random(10),

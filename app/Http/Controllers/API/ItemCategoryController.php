@@ -30,7 +30,7 @@ class ItemCategoryController extends Controller
 
 
     // function for getting categories but with only name and id
-    public function getList(){
+    public function get_list(){
         $categories = ItemCategory::all(['name', 'id']);
         return $categories;
     }

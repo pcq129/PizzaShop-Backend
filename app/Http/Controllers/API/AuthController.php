@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Casts\Json;
 
 class AuthController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'forgot_password', 'reset_password']]);
@@ -29,47 +28,61 @@ class AuthController extends Controller
     // User Login & Generate JWT Token
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        try {
+            $credentials = $request->only('email', 'password');
 
-        // Attempt to authenticate user
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['code' => 401, 'status' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $role = User::with('roles:name')->where('email', '=', $request->email)->first()->roles()->get();
+
+            return response()->json([
+                'code' => 200,
+                'status' => true,
+                'role' => $role,
+                'access_token' => $token,
+                'message' => 'Login Successful',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['code' => 500, 'status' => false,'data'=>$e->getMessage(), 'message' => 'Server error during login'], 500);
         }
-
-        $role = User::with('roles:name')->where('email', '=', $request->email)->first()->roles()->get();
-
-        return response()->json([
-            'code' => 200,
-            'status' => true,
-            'role'=>$role,
-            'access_token'=>$token,
-            'message' => 'Login Successful',
-
-        ]);
-        // return $this->respondWithToken($token);
     }
 
     // User Registration
     public function register(Request $request)
     {
-        $encryptPassword = bcrypt($request->password);
-        $user = new User();
-        $user->password = $encryptPassword;
-        $user->first_name = $request->get('first_name');
-        $user->last_name = $request->get('last_name');
-        $user->user_name = $request->get('user_name');
-        $user->phone = $request->get('phone');
-        $user->email = $request->get('email');
-        $user->address = $request->get('address');
-        $user->save();
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'user_name' => 'required|string|max:255|unique:users,user_name',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:6|confirmed',
+                'phone' => 'required|string',
+                'address' => 'nullable|string',
+            ]);
 
-        $token = Auth::login($user);
+            if ($validator->fails()) {
+                return response()->json(['code' => 400, 'status' => false, 'message' => $validator->messages()], 400);
+            }
 
-        // for saving token in db
-        // $user->remember_token = $token;
-        // $user->save();
+            $user = new User();
+            $user->password = bcrypt($request->password);
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->user_name = $request->user_name;
+            $user->phone = $request->phone;
+            $user->email = $request->email;
+            $user->address = $request->address;
+            $user->save();
 
-        return $this->respondWithToken($token);
+            $token = Auth::login($user);
+
+            return $this->respondWithToken($token);
+        } catch (\Exception $e) {
+            return response()->json(['code' => 500, 'status' => false, 'message' => 'Server error during registration'], 500);
+        }
     }
 
     // Get Authenticated User
@@ -107,6 +120,7 @@ class AuthController extends Controller
     // function for handling forgot password form data
     public function forgot_password(Request $request)
     {
+       try{
         $request->validate(['email' => 'required|email']);
         // dd('data');
         $status = Password::sendResetLink(
@@ -128,6 +142,9 @@ class AuthController extends Controller
 
             ]);
         }
+       }catch(\Exception $e){
+
+       }
     }
 
 

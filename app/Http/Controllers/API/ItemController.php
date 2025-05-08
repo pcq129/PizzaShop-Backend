@@ -39,6 +39,38 @@ class ItemController extends Controller
     }
 
 
+    public function category_items($categoryId, Request $request)
+    {
+
+        $per_page=$request->perPage;
+        // try {
+        $items = Item::where('category_id', $categoryId)->with('ModifierGroups:id')->paginate($per_page);
+
+        $transformed_items =$items->getCollection()->map(function ($item) {
+            // Add modifier_group_ids to the item
+            $item->modifier_group_ids = $item->ModifierGroups->pluck('id')->all();
+            // Optionally remove the full modifierGroups if you only want the IDs
+            unset($item->ModifierGroups);
+            return $item;
+        });
+
+        $paginated_items = $items->setCollection($transformed_items);
+        return response()->json([
+            'code' => '201',
+            'status' => 'true',
+            'data' => $paginated_items,
+            'message' => 'Items fetched successfully'
+        ],  201);
+        // } catch (\Throwable $th) {
+        return response()->json([
+            'code' => '500',
+            'status' => 'true',
+            'data' => $th,
+            'message' => 'Internal Server Error'
+        ],  500);
+        // }
+    }
+
     /**
      * Store a newly created resource in storage.
      */

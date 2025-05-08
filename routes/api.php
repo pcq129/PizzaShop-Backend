@@ -18,6 +18,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\KOTController;
 use App\Http\Controllers\API\RoleController;
 use App\Models\ItemCategory;
+use App\Models\ModifierGroup;
 use App\Models\Section;
 
 /*
@@ -48,15 +49,16 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/userdata', [AuthController::class, 'me']);
-    Route::get('/roles', [RoleController::class, 'getRoles']);
+    Route::get('/roles', [RoleController::class, 'get_roles']);
     Route::get('/allkots', [KOTController::class, 'all_kots']);
-    Route::get('/categorylist', [ItemCategoryController::class, 'getList']);
+    Route::get('/categorylist', [ItemCategoryController::class, 'get_list']);
     Route::get('/waiting-tokens', [SectionController::class, 'waiting_token']);
-    Route::get('/modifier-group-list', [ModifierController::class, 'getList']);
+    Route::get('/modifier-group-list', [ModifierController::class, 'get_list']);
     Route::get('/dashboard/{filter}', [OrderController::class, 'dashboard_data']);
     Route::get('/sectionstable/{id}', [TableController::class, 'index_by_section']);
-    Route::get('/export-excel/{filter}', [OrderController::class, 'exportToExcel']);
-
+    Route::get('/export-excel', [OrderController::class, 'export_to_excel']);
+    Route::get('category-items/{categoryId}', [ItemController::class, 'category_items']);
+    Route::get('modifiergroup-modifiers/{modifierGroupId}',[ModifierController::class, 'getModifierByModifierGroupId']);
     Route::get('/tables', [TableController::class, 'list_tables']);
     Route::get('/items', [ItemController::class, 'list_items']);
     Route::get('/modifiers', [ModifierController::class, 'list_modifiers']);
@@ -148,4 +150,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('tax-fees/search/{search}', [TaxFeeController::class, 'search_tax']);
     Route::get('customer/search/{search}', [CustomerController::class, 'search_customer_by_name']);
     Route::get('modifier/search/{search}', [ModifierController::class, 'search_modifier']);
+    Route::get('/orders/search/', [OrderController::class, 'search']);
+
 });

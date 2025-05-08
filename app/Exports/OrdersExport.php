@@ -39,17 +39,18 @@ class OrdersExport implements
 
     protected $data;
     protected $headers;
-    // protected $filters;
+    protected $filters;
 
-    public function __construct(Collection $data, array $headers = [] )
+    public function __construct(Collection $data, array $headers = [], array $filters = [])
     {
         $this->data = $data;
         $this->headers = $headers;
+        $this->filters = $filters;
     }
 
     public function startCell(): string
     {
-        return 'A9';
+        return 'A11';
     }
 
 
@@ -62,13 +63,15 @@ class OrdersExport implements
     public function styles(Worksheet $sheet)
     {
         $lastRow = 10 + count($this->data);
-        $bodyRange = 'A9:F'.$lastRow;
+        $bodyRange = 'A11:F' . $lastRow;
         return [
-            9    => ['font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['argb' => 'FF0070c0'],
-            ]],
+            11 => [
+                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['argb' => 'FF0070c0'],
+                ]
+            ],
         ];
     }
 
@@ -81,44 +84,82 @@ class OrdersExport implements
 
                 $sheet = $event->sheet->getDelegate();
 
+                $sheet->setCellValue('C7', $this->filters[0] . ' to ' . $this->filters[1]);
+                $sheet->setCellValue('B7', 'Date Range: ')->getStyle('B7')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF0070c0'],
+                    ]
+                ]);
+
+                $sheet->setCellValue('F7', $this->filters[2]);
+                $sheet->setCellValue('E7', 'Status: ')->getStyle('E7')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF0070c0'],
+                    ]
+                ]);
+
+                $sheet->setCellValue('F9', $this->filters[3]);
+                $sheet->setCellValue('E9', 'Search: ')->getStyle('E9')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF0070c0'],
+                    ]
+                ]);
+
+                $sheet->setCellValue('C9',$this->filters[4]);
+                $sheet->setCellValue('B9', 'No. of Records: ')->getStyle('B9')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FF0070c0'],
+                    ]
+                ]);
+
 
                 $sheet->mergeCells('D2:E5')->setCellValue('D2', 'Pizza Shop Orders')->getStyle('D2')->applyFromArray([
-                           'font' => ['bold' => true,
-                           'color' => ['argb' => 'FF0070c0'],
-                                        'size' => 20,],
-                            'alignment' => ['horizontal' => 'center', 'vertical'=>'center'],
-                        ]);
-                        $sheet->mergeCells('C2:C5');
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['argb' => 'FF0070c0'],
+                        'size' => 20,
+                    ],
+                    'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
+                ]);
+                $sheet->mergeCells('C2:C5');
 
-            //     // Merge header cells
-            //     $sheet->setCellValue('B2', 'Status:')->getStyle('B2')->applyFromArray([
-            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-            //     'fillType' => Fill::FILL_SOLID,
-            //     'startColor' => ['argb' => 'FF0070c0'],
-            // ]
-            //     ]);
-            //     $sheet->setCellValue('B5', 'Date:')->getStyle('B5')->applyFromArray([
-            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-            //     'fillType' => Fill::FILL_SOLID,
-            //     'startColor' => ['argb' => 'FF0070c0'],
-            // ]
-            //     ]);
-            //     $sheet->setCellValue('D2', 'Search Text:')->getStyle('D2')->applyFromArray([
-            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-            //     'fillType' => Fill::FILL_SOLID,
-            //     'startColor' => ['argb' => 'FF0070c0'],
-            // ]
-            //     ]);
-            //     $sheet->setCellValue('D5', 'No. Of Records:')->getStyle('D5')->applyFromArray([
-            //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
-            //     'fillType' => Fill::FILL_SOLID,
-            //     'startColor' => ['argb' => 'FF0070c0'],
-            // ]
-            //     ]);
+                //     // Merge header cells
+                //     $sheet->setCellValue('B2', 'Status:')->getStyle('B2')->applyFromArray([
+                //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+                //     'fillType' => Fill::FILL_SOLID,
+                //     'startColor' => ['argb' => 'FF0070c0'],
+                // ]
+                //     ]);
+                //     $sheet->setCellValue('B5', 'Date:')->getStyle('B5')->applyFromArray([
+                //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+                //     'fillType' => Fill::FILL_SOLID,
+                //     'startColor' => ['argb' => 'FF0070c0'],
+                // ]
+                //     ]);
+                //     $sheet->setCellValue('D2', 'Search Text:')->getStyle('D2')->applyFromArray([
+                //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+                //     'fillType' => Fill::FILL_SOLID,
+                //     'startColor' => ['argb' => 'FF0070c0'],
+                // ]
+                //     ]);
+                //     $sheet->setCellValue('D5', 'No. Of Records:')->getStyle('D5')->applyFromArray([
+                //        'font' => ['bold' => true,'color' => ['argb' => 'FFFFFFFF']], 'fill' => [
+                //     'fillType' => Fill::FILL_SOLID,
+                //     'startColor' => ['argb' => 'FF0070c0'],
+                // ]
+                //     ]);
 
                 // Style headers
                 $lastRow = count($this->data);
-                $bodyRange = 'A9:G'.$lastRow+9;
+                $bodyRange = 'A7:G' . $lastRow + 11;
                 $sheet->getStyle($bodyRange)->applyFromArray([
                     'alignment' => ['horizontal' => 'center'],
                 ]);

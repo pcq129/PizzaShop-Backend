@@ -49,13 +49,14 @@ use Illuminate\Validation\Rule;
         ], 200);
     }
 
-    public function getList(){
+    public function get_list(){
         if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
         $modifier_group = ModifierGroup::all(['name', 'id']);
         return $modifier_group;
     }
+
 
 
     /**
@@ -101,20 +102,35 @@ use Illuminate\Validation\Rule;
         ],  201);
     }
 
-    public function getModifierByModifierGroupId(Request $request){
+    public function getModifierByModifierGroupId($modifierGroupId, Request $request){
         if (!auth()->user()->can('view_menu')) {
             abort(403, 'Unauthorized action.');
         }
-        $validator = Validator::make($request->all(), [
-            'id'=>'required'
-        ]);
-        if($validator->fails()){
-            return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
-        }
+        // $validator = Validator::make($request->all(), [
+        //     'modifierGroupId'=>'required'
+        // ]);
+        // if($validator->fails()){
+        //     return response()->json(['code' => 400, 'status' => 'false', 'message' => $firstError = $validator->messages()->first(),], 200);
+        // }
 
-        $modifiers = ModifierGroup::findOrFail($request->id)->modifiers();
+        $per_page = $request->perPage;
 
-        return $modifiers;
+        $modifiers = ModifierGroup::find($modifierGroupId)->modifiers()->with('ModifierGroups')->paginate($per_page);
+
+        $transformed_modifiers = $modifiers->getCollection()->map(function ($modifier){
+            $modifier->modifier_groups = $modifier->ModifierGroups->pluck('id')->all();
+            unset($modifier->ModifierGroups);
+            unset($modifier->pivot);
+            return $modifier;
+        });
+
+        $paginated_modifiers = $modifiers->setCollection($transformed_modifiers);
+        return response()->json([
+            'code' => '200',
+            'status' => 'true',
+            'data' => $paginated_modifiers,
+            'message'=> 'Modifier fetched successfully'
+        ], 200);
     }
 
     /**
