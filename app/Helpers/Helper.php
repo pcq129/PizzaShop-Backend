@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 class Helper
 {
-   
+
 
     public static function sendResponse($code = '', $status = true, $data = null, $message = '')
     {
@@ -21,7 +21,7 @@ class Helper
             'error' => 500,
             'bad_request' => 400
         ];
-    
+
         $default_messages = [
             'ok' => 'Request successful.',
             'created' => 'Resource created successfully.',
@@ -40,11 +40,12 @@ class Helper
         //     $code = 204;
         // }
 
+
         return response()->json([
             'code' => $code,
             'status' => $status,
             'data' => $data,
             'message' => $string_message,
-        ], $code);
+        ], 200);
     }
 }

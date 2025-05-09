@@ -58,6 +58,7 @@ class OrderController extends Controller
             }
 
 
+
             $per_page = $request->perPage ?? 10;
             $start_date = $request->start_date;
             $end_date = $request->end_date;
@@ -83,11 +84,7 @@ class OrderController extends Controller
                     $end = Carbon::createFromFormat('d/m/Y', $end_date)->endOfDay();
                     $orders->whereBetween('created_at', [$start, $end]);
                 } catch (\Exception $e) {
-                    return response()->json([
-                        'code' => '400',
-                        'status' => 'false',
-                        'message' => 'Invalid date format.'
-                    ], 400);
+                    return Helper::sendResponse('bad_request', false, $e->getMessage(), 'Invalid date format');
                 }
             }
 
@@ -100,7 +97,6 @@ class OrderController extends Controller
 
                 return Helper::sendResponse('ok', true, $filtered_data, 'Orders found');
             } else {
-
                 return Helper::sendResponse('no_content', true, null, 'Order not found');
             }
 
@@ -622,15 +618,15 @@ class OrderController extends Controller
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $status = $request->status;
-            $order_id = $request->order_id;
+            $search = $request->order_id;
 
 
             $orders = Order::with(['customer:id,name']);
 
 
 
-            if ($order_id != 0) {
-                $orders->where('id', 'like', "%$order_id%");
+            if ($search != 0) {
+                $orders->where('id', 'like', "%$search%");
             }
 
 
@@ -676,8 +672,8 @@ class OrderController extends Controller
             if($status == 0){
                 $status = 'All';
             }
-            if($order_id == 0){
-                $order_id = '-';
+            if($search == 0){
+                $search = '-';
             }
 
             $count = $order_collection->count(['*']);
@@ -687,7 +683,7 @@ class OrderController extends Controller
                 $start_date,
                 $end_date,
                 $status,
-                $order_id,
+                $search,
                 $count
             ];
             return Excel::download(new OrdersExport($order_collection, $headings,$filters), 'orders.xlsx');

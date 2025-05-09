@@ -171,13 +171,15 @@ class TableController extends Controller
         }
     }
 
-    public function search_table($search)
+    public function search_table($search, Request $request)
     {
         try {
             if (!auth()->user()->can('view_table')) {
                 abort(403, 'Unauthorized action.');
             }
-            $tables = Table::where('name', 'like', "%$search%")->get();
+
+            $per_page = $request->perPage;
+            $tables = Table::where('name', 'like', "%$search%")->paginate($per_page);
             if ($tables->count() >= 1) {
 
                 return Helper::sendResponse('302', true, $tables, 'Tables found');

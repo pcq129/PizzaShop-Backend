@@ -10,6 +10,11 @@ use App\Http\Controllers\Controller;
 use App\Models\waitingToken;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\Helper;
+use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomerExports;
+
+
 
 class CustomerController extends Controller
 {
@@ -64,9 +69,7 @@ class CustomerController extends Controller
 
             $search = $request->email;
             $section_id = $request->sectionId;
-            // dd($request);
             $customer = Customer::where('email', 'like', "%$search%")->where('status', '=', 1)->where('section_id', '=', $section_id)->get();
-            // dd($customer);
             if ($customer) {
 
                 return Helper::sendResponse('found', true, $customer, 'Customers found');
@@ -269,20 +272,95 @@ class CustomerController extends Controller
         }
     }
 
-    public function search_customer_by_name($search)
+    public function search_customer_by_name($search, Request $request)
     {
         try {
             if (!auth()->user()->can('view_customer')) {
                 abort(403, 'Unauthorized action.');
             }
-            $customers = Customer::where('name', 'like', "%$search%")->get();
-            if ($customers->count() >= 1) {
+            $start_date = $request->startDate;
+            $end_date= $request->endDate;
+            $per_page = $request->perPage;
+            $customers = Customer::with('orders')->orderBy('created_at', 'desc');
+            if ($start_date!=0 && $end_date!=0) {
+                try {
+                    $start = Carbon::createFromFormat('d/m/Y', $start_date)->startOfDay();
+                    $end = Carbon::createFromFormat('d/m/Y', $end_date)->endOfDay();
+                    $customers->whereBetween('created_at', [$start, $end]);
+                } catch (\Exception $e) {
+                    return Helper::sendResponse('bad_request', false, $e->getMessage(), 'Invalid date format');
+                }
+            }
 
-                return Helper::sendResponse('found', true, $customers, 'Customers found');
+            if(isset($search) && $search!=0){
+                $customers->where('name', 'like', "%$search%");
+            }
+
+            $result = $customers->paginate($per_page);
+            if ($result->count() >= 1) {
+                return Helper::sendResponse('found', true, $result, 'Customers found');
             } else {
-
                 return Helper::sendResponse('no_content', false, null, 'Customers not found');
             }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::sendResponse('error', false, $th->getMessage(), 'Error searching Customers');
+        }
+    }
+
+    public function export_customers(Request $request)
+    {
+        try {
+            if (!auth()->user()->can('view_customer')) {
+                abort(403, 'Unauthorized action.');
+            }
+            $search = $request->search;
+            $start_date = $request->startDate;
+            $end_date= $request->endDate;
+            $customers = Customer::withCount('orders')->orderBy('created_at', 'desc');
+            if ($start_date!=0 && $end_date!=0) {
+                try {
+                    $start = Carbon::createFromFormat('d/m/Y', $start_date)->startOfDay();
+                    $end = Carbon::createFromFormat('d/m/Y', $end_date)->endOfDay();
+                    $customers->whereBetween('created_at', [$start, $end]);
+                } catch (\Exception $e) {
+                    return Helper::sendResponse('bad_request', false, $e->getMessage(), 'Invalid date format');
+                }
+            }else{
+                $start_date=null;
+                $end_date = null;
+            }
+
+            if(isset($search) && $search!=0){
+                $customers->where('name', 'like', "%$search%");
+            }
+
+            $result = $customers->get([
+                'id', 'mobile', 'email','name','created_at', 'order_count'
+            ])->map(function ($customer) {
+                return (object) [
+                    'ID' => $customer->id,
+                    'Name' => $customer->name ?? null,
+                    'Email' => $customer->email,
+                    'Date' => Carbon::parse($customer->created_at)->format('d/m/Y'),
+                    'Mobile Number' => $customer->mobile,
+                    'Total Orders' => $customer->orders_count
+                ];
+            });
+
+
+            $count = $result->count(['*']);
+            $headings =
+                ['ID','Name', 'Email', 'Date', 'Mobile Number', 'Total Orders'];
+            $filters = [
+                $start_date,
+                $end_date,
+                $search,
+                $count
+            ];
+            return Excel::download(new CustomerExports($result, $headings,$filters), 'customers.xlsx');
+
+
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::sendResponse('error', false, $th->getMessage(), 'Error searching Customers');

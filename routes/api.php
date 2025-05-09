@@ -57,6 +57,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/dashboard/{filter}', [OrderController::class, 'dashboard_data']);
     Route::get('/sectionstable/{id}', [TableController::class, 'index_by_section']);
     Route::get('/export-excel', [OrderController::class, 'export_to_excel']);
+    Route::get('/export-customers', [CustomerController::class, 'export_customers']);
     Route::get('category-items/{categoryId}', [ItemController::class, 'category_items']);
     Route::get('modifiergroup-modifiers/{modifierGroupId}',[ModifierController::class, 'getModifierByModifierGroupId']);
     Route::get('/tables', [TableController::class, 'list_tables']);
@@ -151,5 +152,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('customer/search/{search}', [CustomerController::class, 'search_customer_by_name']);
     Route::get('modifier/search/{search}', [ModifierController::class, 'search_modifier']);
     Route::get('/orders/search/', [OrderController::class, 'search']);
+    Route::get('item/add-favourite/{itemId}', [ItemController::class, 'add_to_favourite']);
+    Route::get('items/orderapp/search', [ItemController::class, 'search_items_orderapp']);
+    Route::get('items/favourites', [ItemController::class, 'favourite_items']);
 
 });

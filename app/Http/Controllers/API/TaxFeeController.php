@@ -185,17 +185,14 @@ class TaxFeeController extends Controller
             }
             $tax = TaxFee::where('name', 'like', "%$search%")->get();
             if ($tax->count() >= 1) {
-                return Helper::sendResponse('found', false, $tax, 'Tax not found');
+                return Helper::sendResponse('found', false, $tax, 'Tax found');
             } else {
-                return response()->json([
-                    'code' => '404',
-                    'status' => 'false',
-                    'message' => 'Taxes not found'
-                ],  404);
                 return Helper::sendResponse('no_content', false, null, 'Tax not found');
             }
         } catch (\Throwable $th) {
             //throw $th;
+            return Helper::sendResponse('error', false, $th->getMessage(), 'Error while searching Tax');
+
         }
     }
 }

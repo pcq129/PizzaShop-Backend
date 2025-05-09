@@ -16,25 +16,27 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-        // \App\Models\User::factory(1)->create();
+        // \App\Models\User::factory(10)->create();
 
 
-        $super_admin = User::factory()->create([
-            'first_name' => 'Super',
-            'last_name' => 'Admin',
-            'user_name' => 'SuperAdmin',
-            'phone' => '9099102310',
-            'address' => 'Ahmedabad, Gujarat',
-            'email' => 'super_admin@tatvasoft.com',
-            'email_verified_at' => now(),
-            'password' => bcrypt('#Harmit'),
-            'remember_token' => Str::random(10),
-        ]);
+        for ($i=0; $i < 15; $i++) {
+            $super_admin = User::factory()->create([
+                'first_name' => 'Super'.$i,
+                'last_name' => 'Admin',
+                'user_name' => 'SuperAdmin',
+                'phone' => '9099102310',
+                'address' => 'Ahmedabad, Gujarat',
+                'email' => 'super_admi'.$i.'n@tatvasoft.com',
+                'email_verified_at' => now(),
+                'password' => bcrypt('#Harmit'),
+                'remember_token' => Str::random(10),
+            ]);
 
-        $super_admin->assignRole('super_admin');
+            $super_admin->assignRole('super_admin');
 
 
-        $super_admin->save();
+            $super_admin->save();
+        }
 
 
         // $account_manager = User::factory()->create([
